@@ -22,10 +22,12 @@ def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
+
 @app.route("/")
 def hello():
     db_sess = db_session.create_session()
     return render_template("hello.html")
+
 
 @app.route("/home")
 @login_required
@@ -145,7 +147,6 @@ def news_delete(id):
 def logout():
     logout_user()
     return redirect("/")
-
 
 
 if __name__ == '__main__':
