@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui" {
 
-   themes: light --default, dark --prefersdark, luxury, business, silk, sunset, forest, black;
+   themes: light --default, dark --prefersdark, luxury, business, silk, sunset, forest, black, retro;
 
 }

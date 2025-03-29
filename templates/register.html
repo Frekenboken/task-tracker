@@ -1,46 +1,64 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Регистрация</h1>
-<form action="" method="post">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.email.label }}<br>
-        {{ form.email(class="form-control", type="email") }}<br>
-        {% for error in form.email.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(class="form-control", type="password") }}<br>
-        {% for error in form.password.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.password_again.label }}<br>
-        {{ form.password_again(class="form-control", type="password") }}<br>
-        {% for error in form.password_again.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.name.label }}<br>
-        {{ form.name(class="form-control") }}<br>
-        {% for error in form.name.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {{message}}
-</form>
+<div class="flex justify-center">
+    <div class="flex min-h-full flex-col justify-center px-6 py-12 w-150">
+        <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+            <img class="mx-auto h-10 w-auto"
+                 src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">
+            <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-200">Вход в аккаунт</h2>
+        </div>
+
+        <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+            <form class="space-y-6" action="" method="post">
+                {{ form.hidden_tag() }}
+                <p>
+                    {{ form.name.label(class="block text-sm/6 font-medium") }}<br>
+                    {{ form.name(class="input input-primary w-full") }}<br>
+                    {% for error in form.name.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                </p>
+
+                <p>
+                    {{ form.email.label(class="block text-sm/6 font-medium") }}<br>
+                    {{ form.email(class="input input-primary w-full", type="email") }}<br>
+                    {% for error in form.email.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                </p>
+
+                <p>
+                    {{ form.password.label(class="block text-sm/6 font-medium") }}<br>
+                    {{ form.password(class="input input-primary w-full", type="password") }}<br>
+                    {% for error in form.password.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                </p>
+
+                <p>
+                    {{ form.password_again.label(class="block text-sm/6 font-medium") }}<br>
+                    {{ form.password_again(class="input input-primary w-full", type="password") }}<br>
+                    {% for error in form.password_again.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                </p>
+
+
+                <p>{{ form.submit(type="submit", class="btn btn-primary flex w-full") }}</p>
+                <div>{{ message }}</div>
+            </form>
+        </div>
+    </div>
+
+
+</div>
 {% endblock %}

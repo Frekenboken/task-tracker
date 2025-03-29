@@ -3,8 +3,10 @@ from flask import Flask, render_template, redirect, request, make_response, sess
 from data import db_session
 from data.users import User
 from data.news import News
+from data.tasks import Tasks
 from forms.newsform import NewsForm
 from forms.loginform import LoginForm
+from forms.tasksform import TasksForm
 from forms.registerform import RegisterForm
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_restful import reqparse, abort, Api, Resource
@@ -29,11 +31,25 @@ def hello():
     return render_template("hello.html")
 
 
-@app.route("/home")
-@login_required
+@app.route("/home", methods=['GET', 'POST'])
 def home():
+    if not current_user.is_authenticated:
+        return redirect("/login")
+
+    form = TasksForm()
     db_sess = db_session.create_session()
-    return render_template("home.html")
+    if form.validate_on_submit():
+        task = Tasks(
+            name=form.name.data,
+            day=form.day.data
+        )
+        db_sess.add(task)
+        db_sess.commit()
+        return redirect("/home")
+
+    tasks = [x.to_dict() for x in db_sess.query(Tasks).all()]
+    return render_template("home.html", form=form, tasks=tasks)
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
