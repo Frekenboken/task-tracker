@@ -1,17 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex justify-between p-8">
+<div class="flex p-8 space-x-8">
   <div class="calendar">
     <calendar-date class="cally bg-base-100 border border-base-300 shadow-lg rounded-box">
-      <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
-      <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+      <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24">
+        <path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path>
+      </svg>
+      <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24">
+        <path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path>
+      </svg>
       <calendar-month></calendar-month>
     </calendar-date>
   </div>
 
 
-  <div class="tasks h-min w-150">
+  <div class="tasks h-min w-full">
     <button class="btn btn-primary w-full" onclick="my_modal_2.showModal()">+ Добавить задачу</button>
     {% for task in tasks %}
     <div class="card card-side bg-base-200 shadow-xl w-full my-2">
@@ -24,20 +30,24 @@
             <p class="text-sm text-gray-500">{{task.day}}</p>
           </div>
         </div>
-        
+
         <!-- Кнопки действий -->
         <div class="flex space-x-2">
           <!-- Кнопка редактирования -->
           <button class="btn btn-sm btn-ghost btn-square">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
           </button>
-          
+
           <!-- Кнопка удаления -->
           <button class="btn btn-sm btn-ghost btn-square text-error">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </button>
         </div>
@@ -46,33 +56,34 @@
     {% endfor %}
   </div>
 
-  <div class="flex justify-center overflow-hidden">
-    <div class="relative w-96 h-96 md:w-128 md:h-128 lg:w-160 lg:h-160">
+  <div
+    class="flex justify-center overflow-hidden min-w-96 min-h-96 md:min-w-128 md:min-h-128 lg:min-w-160 lg:min-h-160">
+    <div class="relative min-w-96 min-h-96 md:min-w-128 md:min-h-128 lg:min-w-160 lg:min-h-160">
 
       <!-- Основной круг -->
       <div class="absolute inset-0 rounded-full border-4 border-gray-300 z-1"></div>
 
       <!-- Засечки и цифры -->
       {% for i in range(48) %}
-        {% set hour = i // 2 %}
-        {% set is_half = i % 2 %}
-        {% set angle = i * 7.5 %}  <!-- 360/48 = 7.5 градусов -->
+      {% set hour = i // 2 %}
+      {% set is_half = i % 2 %}
+      {% set angle = i * 7.5 %} <!-- 360/48 = 7.5 градусов -->
 
-        <!-- Поворотная трансформация для каждой засечки -->
-        <div class="absolute inset-0" style="transform: rotate({{ angle }}deg)">
-          <!-- Длинные засечки для целых часов -->
-          {% if not is_half %}
-            <div class="absolute top-0 left-1/2 w-1 h-6 bg-gray-300 transform -translate-x-1/2"></div>
-            <!-- Цифры часов с компенсацией поворота -->
-            <div class="absolute top-8 left-1/2 text-lg font-bold"
-                style="transform: translate(-50%, 0) rotate(-{{ angle }}deg); transform-origin: center">
-                {{ hour }}
-            </div>
-          <!-- Короткие засечки для получасов -->
-          {% else %}
-            <div class="absolute top-0 left-1/2 w-0.5 h-4 bg-gray-600 transform -translate-x-1/2"></div>
-          {% endif %}
+      <!-- Поворотная трансформация для каждой засечки -->
+      <div class="absolute inset-0" style="transform: rotate({{ angle }}deg)">
+        <!-- Длинные засечки для целых часов -->
+        {% if not is_half %}
+        <div class="absolute top-0 left-1/2 w-1 h-6 bg-gray-300 transform -translate-x-1/2"></div>
+        <!-- Цифры часов с компенсацией поворота -->
+        <div class="absolute top-8 left-1/2 text-lg font-bold"
+          style="transform: translate(-50%, 0) rotate(-{{ angle }}deg); transform-origin: center">
+          {{ hour }}
         </div>
+        <!-- Короткие засечки для получасов -->
+        {% else %}
+        <div class="absolute top-0 left-1/2 w-0.5 h-4 bg-gray-600 transform -translate-x-1/2"></div>
+        {% endif %}
+      </div>
       {% endfor %}
 
       <!-- Место для будущих задач (цветных полос) -->
@@ -90,20 +101,20 @@
 
       {{ form.hidden_tag() }}
       <p>
-          {{ form.name.label(class="block text-sm/6 font-medium") }}<br>
-          {{ form.name(class="input input-primary w-full") }}<br>
-          {% for error in form.name.errors %}
+        {{ form.name.label(class="block text-sm/6 font-medium") }}<br>
+        {{ form.name(class="input input-primary w-full") }}<br>
+        {% for error in form.name.errors %}
       <div class="alert alert-danger" role="alert">
-          {{ error }}
+        {{ error }}
       </div>
       {% endfor %}
       </p>
       <p>
-          {{ form.day.label(class="block text-sm/6 font-medium") }}<br>
-          {{ form.day(class="input input-primary w-full") }}<br>
-          {% for error in form.day.errors %}
+        {{ form.day.label(class="block text-sm/6 font-medium") }}<br>
+        {{ form.day(class="input input-primary w-full") }}<br>
+        {% for error in form.day.errors %}
       <div class="alert alert-danger" role="alert">
-          {{ error }}
+        {{ error }}
       </div>
       {% endfor %}
       </p>

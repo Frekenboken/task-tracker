@@ -1,4 +1,6 @@
 import secrets
+import time
+
 from flask import Flask, render_template, redirect, request, make_response, session, abort
 from data import db_session
 from data.users import User
@@ -31,8 +33,33 @@ def hello():
     return render_template("hello.html")
 
 
-@app.route("/home", methods=['GET', 'POST'])
-def home():
+@app.route("/home")
+def home_base():
+    return redirect("/home/123")
+
+
+@app.route("/homeGetTime")
+def home_with_local_time():
+    return render_template("homeGetTime.html")
+
+
+@app.route("/getTime", methods=['GET'])
+def get_time():
+    print("browser time: ", request.args.get("time"))
+    print("server time : ", time.strftime('%A %B, %d %Y %H:%M:%S'))
+
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.email == current_user.email).first()
+    user.time_zone = int(request.args.get("time")) // 60
+    db_sess.commit()
+
+    print(db_sess.query(User).filter(User.email == current_user.email).first().to_dict())
+
+    return "Done"
+
+
+@app.route("/home/<string:date>", methods=['GET', 'POST'])
+def home(date):
     if not current_user.is_authenticated:
         return redirect("/login")
 
@@ -51,7 +78,6 @@ def home():
     return render_template("home.html", form=form, tasks=tasks)
 
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -60,7 +86,7 @@ def login():
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
-            return redirect("/home")
+            return redirect("/homeGetTime")
         return render_template('login.html',
                                message="Неправильный логин или пароль",
                                form=form)

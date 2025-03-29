@@ -19,7 +19,9 @@ class User(SqlAlchemyBase, UserMixin):
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
     api_key = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    news = orm.relationship("News", back_populates='user')
+    time_zone = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+
+    # news = orm.relationship("News", back_populates='user')
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
@@ -31,9 +33,9 @@ class User(SqlAlchemyBase, UserMixin):
         return {
             "id": self.id,
             "name": self.name,
-            "about": self.about,
             "email": self.email,
             "hashed_password": self.hashed_password,
             "created_date": self.created_date,
-            "news": self.news
+            "api_key": self.api_key,
+            "time_zone": self.time_zone,
         }
