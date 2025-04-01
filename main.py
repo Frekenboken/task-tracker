@@ -31,6 +31,11 @@ def load_user(user_id):
     return db_sess.query(User).get(user_id)
 
 
+@app.route("/test")
+def test():
+    return render_template("test.html")
+
+
 @app.route("/")
 def hello():
     db_sess = db_session.create_session()
@@ -63,17 +68,16 @@ def home(date):
     db_sess = db_session.create_session()
 
     if request.form.get('form_type') == 'time_task' and time_task_form.validate_on_submit():
-        print(type(time_task_form.start_time.data))
-        task = TimeTask(
-            name=time_task_form.name.data,
-            description=time_task_form.description.data,
-            start_time=time_task_form.start_time.data,
-            end_time=time_task_form.end_time.data if time_task_form.end_time.data else time_task_form.start_time.data,
-            duration=delta_times(time_task_form.start_time.data,
-                                 time_task_form.end_time.data) if time_task_form.end_time.data else time(0, 0),
-            date=datetime.strptime(date, "%Y-%m-%d").date(),
-        )
-        db_sess.add(task)
+        task = TimeTask()
+        task.name = time_task_form.name.data
+        task.description = time_task_form.description.data
+        task.start_time = time_task_form.start_time.data
+        task.end_time = time_task_form.end_time.data if time_task_form.end_time.data else time_task_form.start_time.data
+        task.duration = delta_times(time_task_form.start_time.data,
+                                 time_task_form.end_time.data) if time_task_form.end_time.data else time(0, 0)
+        task.date = datetime.strptime(date, "%Y-%m-%d").date()
+        current_user.time_tasks.append(task)
+        db_sess.merge(current_user)
         db_sess.commit()
         return redirect("/home")
 
@@ -124,6 +128,7 @@ def home(date):
     }
 
     return render_template("home.html",
+                           date=date,
                            tasks=tasks,
                            forms=forms,
                            form_errors=form_errors)
@@ -225,19 +230,21 @@ def edit_news(id):
                            )
 
 
-@app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
+@app.route('/delete_time_task', methods=['GET', 'POST'])
 @login_required
-def news_delete(id):
+def news_delete():
+    page_date = request.args.get('page_date', default=None)
+    task_id = request.args.get('task_id', default=None)
+
     db_sess = db_session.create_session()
-    news = db_sess.query(News).filter(News.id == id,
-                                      News.user == current_user
-                                      ).first()
-    if news:
-        db_sess.delete(news)
+    task = db_sess.query(TimeTask).filter(TimeTask.id == task_id, TimeTask.user == current_user).first()
+
+    if task:
+        db_sess.delete(task)
         db_sess.commit()
     else:
         abort(404)
-    return redirect('/')
+    return redirect(f'/home/{page_date}')
 
 
 @app.route('/logout')

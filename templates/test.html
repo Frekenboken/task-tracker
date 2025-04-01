@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex flex-col gap-6 p-4 bg-base-200 rounded-box" id="circularTimeRange">
+  <!-- Форма ввода времени -->
+  <div class="flex flex-col gap-2">
+    <div class="flex items-center gap-4">
+      <!-- Поле "От" -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">От</span>
+        </label>
+        <input type="time" class="input input-bordered time-from" name="time_from"
+          value="{{ time_from if time_from else '00:00' }}" step="300">
+      </div>
+
+      <!-- Поле "До" -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">До</span>
+        </label>
+        <input type="time" class="input input-bordered time-to" name="time_to"
+          value="{{ time_to if time_to else '23:59' }}" step="300">
+      </div>
+    </div>
+
+    <!-- Переключатель дней -->
+    <div class="flex gap-4">
+      <label class="label cursor-pointer justify-start gap-2">
+        <input type="radio" class="radio radio-sm day-option" name="day_option" value="today" checked>
+        <span class="label-text">Сегодня</span>
+      </label>
+      <label class="label cursor-pointer justify-start gap-2">
+        <input type="radio" class="radio radio-sm day-option" name="day_option" value="tomorrow">
+        <span class="label-text">Завтра</span>
+      </label>
+      <label class="label cursor-pointer justify-start gap-2">
+        <input type="radio" class="radio radio-sm day-option" name="day_option" value="both">
+        <span class="label-text">Оба дня</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Разделитель -->
+  <div class="divider">Или</div>
+
+  <!-- Круговой ползунок -->
+  <div class="flex flex-col items-center gap-4">
+    <div class="relative w-64 h-64">
+      <!-- Круговая шкала -->
+      <svg class="w-full h-full" viewBox="0 0 100 100">
+        <!-- Фоновый круг -->
+        <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" stroke-width="6" />
+
+        <!-- Активная дуга -->
+        <path class="active-arc" fill="none" stroke="#3b82f6" stroke-width="6" stroke-linecap="round" d="" />
+
+        <!-- 24 часа маркеры -->
+        <g class="hour-marks" stroke="#9ca3af" stroke-width="1"></g>
+      </svg>
+
+      <!-- Ручка "От" -->
+      <div
+        class="absolute w-6 h-6 bg-primary rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer z-20 from-handle"
+        style="transform-origin: center; transform: translate(-50%, -50%) rotate(0deg) translateY(-45px) rotate(0deg);">
+      </div>
+
+      <!-- Ручка "До" -->
+      <div
+        class="absolute w-6 h-6 bg-secondary rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer z-20 to-handle"
+        style="transform-origin: center; transform: translate(-50%, -50%) rotate(0deg) translateY(-45px) rotate(0deg);">
+      </div>
+
+      <!-- Центральный текст -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+        <div class="text-lg font-bold duration-display">0 ч 0 мин</div>
+      </div>
+    </div>
+
+    <!-- Отображение выбранного времени -->
+    <div class="flex justify-between w-full text-sm time-labels">
+      <span class="time-from-label">{{ time_from if time_from else '00:00' }}</span>
+      <span class="time-to-label">{{ time_to if time_to else '23:59' }}</span>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const component = document.getElementById('circularTimeRange');
+      const timeFromInput = component.querySelector('.time-from');
+      const timeToInput = component.querySelector('.time-to');
+      const dayOptions = component.querySelectorAll('.day-option');
+      const fromHandle = component.querySelector('.from-handle');
+      const toHandle = component.querySelector('.to-handle');
+      const activeArc = component.querySelector('.active-arc');
+      const hourMarks = component.querySelector('.hour-marks');
+      const durationDisplay = component.querySelector('.duration-display');
+      const timeFromLabel = component.querySelector('.time-from-label');
+      const timeToLabel = component.querySelector('.time-to-label');
+
+      let isDragging = false;
+      let activeHandle = null;
+      let fromAngle = 0;
+      let toAngle = 270; // Начальное положение - 18:00
+
+      // Инициализация часовых меток
+      for (let i = 0; i < 24; i++) {
+        const angle = (i * 15) - 90; // 15 градусов на час, начинаем с -90 (12 часов)
+        const x1 = 50 + 40 * Math.cos(angle * Math.PI / 180);
+        const y1 = 50 + 40 * Math.sin(angle * Math.PI / 180);
+        const x2 = 50 + 45 * Math.cos(angle * Math.PI / 180);
+        const y2 = 50 + 45 * Math.sin(angle * Math.PI / 180);
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        hourMarks.appendChild(line);
+      }
+
+      // Инициализация позиций
+      updateVisuals();
+
+      // События для ручек
+      fromHandle.addEventListener('mousedown', (e) => startDrag(e, 'from'));
+      toHandle.addEventListener('mousedown', (e) => startDrag(e, 'to'));
+
+      // События для полей времени
+      timeFromInput.addEventListener('change', updateFromTimeInput);
+      timeToInput.addEventListener('change', updateFromTimeInput);
+      dayOptions.forEach(option => {
+        option.addEventListener('change', updateFromTimeInput);
+      });
+
+      function startDrag(e, handle) {
+        isDragging = true;
+        activeHandle = handle;
+        document.addEventListener('mousemove', handleDrag);
+        document.addEventListener('mouseup', stopDrag);
+        e.preventDefault();
+      }
+
+      function handleDrag(e) {
+        if (!isDragging) return;
+
+        const circle = component.querySelector('svg');
+        const rect = circle.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        // Угол в радианах
+        let angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180 / Math.PI;
+        angle = (angle + 90 + 360) % 360; // Нормализуем угол (0° = 12 часов)
+
+        if (activeHandle === 'from') {
+          fromAngle = angle;
+        } else {
+          toAngle = angle;
+        }
+
+        updateVisuals();
+        updateTimeInputs();
+      }
+
+      function stopDrag() {
+        isDragging = false;
+        activeHandle = null;
+        document.removeEventListener('mousemove', handleDrag);
+        document.removeEventListener('mouseup', stopDrag);
+      }
+
+      function updateVisuals() {
+        // Обновляем позиции ручек
+        fromHandle.style.transform = `translate(-50%, -50%) rotate(${fromAngle}deg) translateY(-45px) rotate(${-fromAngle}deg)`;
+        toHandle.style.transform = `translate(-50%, -50%) rotate(${toAngle}deg) translateY(-45px) rotate(${-toAngle}deg)`;
+
+        // Обновляем активную дугу
+        let arcStart = Math.min(fromAngle, toAngle);
+        let arcEnd = Math.max(fromAngle, toAngle);
+
+        // Если ручки поменялись местами (пересекли полночь)
+        if (fromAngle > toAngle) {
+          arcStart = toAngle;
+          arcEnd = fromAngle;
+        }
+
+        const startRad = (arcStart - 90) * Math.PI / 180;
+        const endRad = (arcEnd - 90) * Math.PI / 180;
+
+        const x1 = 50 + 45 * Math.cos(startRad);
+        const y1 = 50 + 45 * Math.sin(startRad);
+        const x2 = 50 + 45 * Math.cos(endRad);
+        const y2 = 50 + 45 * Math.sin(endRad);
+
+        const largeArcFlag = (arcEnd - arcStart) <= 180 ? 0 : 1;
+
+        activeArc.setAttribute('d', `M ${x1} ${y1} A 45 45 0 ${largeArcFlag} 1 ${x2} ${y2}`);
+
+        // Обновляем длительность
+        const durationMinutes = calculateDuration();
+        const hours = Math.floor(durationMinutes / 60);
+        const minutes = durationMinutes % 60;
+        durationDisplay.textContent = `${hours} ч ${minutes} мин`;
+      }
+
+      function updateTimeInputs() {
+        const fromTime = angleToTime(fromAngle);
+        const toTime = angleToTime(toAngle);
+
+        timeFromInput.value = fromTime.time;
+        timeToInput.value = toTime.time;
+
+        // Обновляем выбор дня
+        let dayOption = 'today';
+        if (fromAngle > toAngle) {
+          dayOption = 'both';
+        } else if (fromTime.hours >= 12 && toTime.hours < 12) {
+          dayOption = 'tomorrow';
+        }
+
+        component.querySelector(`.day-option[value="${dayOption}"]`).checked = true;
+
+        // Обновляем метки
+        timeFromLabel.textContent = fromTime.time;
+        timeToLabel.textContent = toTime.time + (dayOption === 'both' ? ' (след. день)' : '');
+      }
+
+      function updateFromTimeInput() {
+        const fromTime = timeFromInput.value.split(':');
+        const toTime = timeToInput.value.split(':');
+
+        const fromHours = parseInt(fromTime[0]);
+        const fromMinutes = parseInt(fromTime[1]);
+        const toHours = parseInt(toTime[0]);
+        const toMinutes = parseInt(toTime[1]);
+
+        // Учитываем выбранный день
+        let dayOffset = 0;
+        const selectedOption = component.querySelector('.day-option:checked').value;
+
+        if (selectedOption === 'tomorrow') {
+          dayOffset = 24;
+        } else if (selectedOption === 'both') {
+          dayOffset = toHours < fromHours ? 24 : 0;
+        }
+
+        const totalFromMinutes = fromHours * 60 + fromMinutes;
+        const totalToMinutes = (toHours + dayOffset) * 60 + toMinutes;
+
+        fromAngle = (totalFromMinutes / 4) % 360;
+        toAngle = (totalToMinutes / 4) % 360;
+
+        updateVisuals();
+      }
+
+      function angleToTime(angle) {
+        // 360° = 24 часа = 1440 минут
+        // 1° = 4 минуты
+        const totalMinutes = Math.round((angle / 360) * 1440) % 1440;
+        const hours = Math.floor(totalMinutes / 60) % 24;
+        const minutes = totalMinutes % 60;
+
+        return {
+          hours,
+          minutes,
+          time: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
+        };
+      }
+
+      function calculateDuration() {
+        let duration;
+
+        if (fromAngle <= toAngle) {
+          duration = (toAngle - fromAngle) * 4; // 1° = 4 минуты
+        } else {
+          duration = (360 - fromAngle + toAngle) * 4;
+        }
+
+        // Максимальная длительность - 48 часов (2 дня)
+        return Math.min(duration, 2880);
+      }
+    });
+  </script>
+</div>
+{% endblock %}

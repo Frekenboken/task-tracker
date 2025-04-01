@@ -20,6 +20,11 @@ class TimeTask(SqlAlchemyBase):
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
 
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                sqlalchemy.ForeignKey("users.id"))
+
+    user = orm.relationship('User')
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -45,6 +50,11 @@ class ShortTask(SqlAlchemyBase):
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
 
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                sqlalchemy.ForeignKey("users.id"))
+
+    user = orm.relationship('User')
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -65,6 +75,11 @@ class CommonTask(SqlAlchemyBase):
     done = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
+
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                sqlalchemy.ForeignKey("users.id"))
+
+    user = orm.relationship('User')
 
     def to_dict(self):
         return {

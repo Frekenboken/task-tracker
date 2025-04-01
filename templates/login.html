@@ -4,8 +4,8 @@
 <div class="flex justify-center">
     <div class="flex min-h-full flex-col justify-center px-6 py-12 w-150">
         <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-            <img class="mx-auto h-10 w-auto"
-                 src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">
+<!--            <img class="mx-auto h-10 w-auto"-->
+<!--                 src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">-->
             <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-200">Вход в аккаунт</h2>
         </div>
 
@@ -33,7 +33,7 @@
                     {% endfor %}
                 </p>
 
-                <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+                <p class="flex items-center space-x-2">{{ form.remember_me(class="checkbox checkbox-neutral") }} {{ form.remember_me.label }}</p>
                 <p>{{ form.submit(type="submit", class="btn btn-primary flex w-full") }}</p>
                 <div>{{ message }}</div>
             </form>

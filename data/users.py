@@ -21,7 +21,9 @@ class User(SqlAlchemyBase, UserMixin):
     api_key = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     time_zone = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
-    # news = orm.relationship("News", back_populates='user')
+    time_tasks = orm.relationship("TimeTask", back_populates='user')
+    short_tasks = orm.relationship("ShortTask", back_populates='user')
+    common_tasks = orm.relationship("CommonTask", back_populates='user')
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
