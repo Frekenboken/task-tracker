@@ -19,7 +19,7 @@ class User(SqlAlchemyBase, UserMixin):
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
     api_key = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    time_zone = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    time_zone = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     # news = orm.relationship("News", back_populates='user')
 

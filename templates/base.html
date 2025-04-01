@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="dark" style="scrollbar-gutter: auto !important;">
+<html lang="en" data-theme="sunset" style="scrollbar-gutter: auto !important;">
 
 <head>
     <meta charset="utf-8">
@@ -14,52 +14,52 @@
 </head>
 
 <body>
-    <header>
-        <!-- <nav class="navbar navbar-light bg-dark">-->
-        <!--        <a class="navbar-brand" href="/">Наше приложение</a>-->
-        <!--        {% if current_user.is_authenticated %}-->
-        <!--    <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>-->
-        <!--{% else %}-->
-        <!--    <p>-->
-        <!--        <a class="btn btn-primary " href="/register">Зарегистрироваться</a>-->
-        <!--        <a class="btn btn-success" href="/login">Войти</a>-->
-        <!--    </p>-->
-        <!--{% endif %}-->
-        <!--    </nav> -->
-        <div class="navbar bg-base-200">
-            <div class="flex-1">
-                <a href="/" class="btn btn-ghost text-xl">Delay</a>
-            </div>
-            <div class="flex gap-2">
-                <!--        <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto"/>-->
-                {% if current_user.is_authenticated %}
-                <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-                        <div class="w-10 rounded-full">
-                            {{ current_user.name[0] }}
-                            <!--                    <img-->
-                            <!--                            alt="Tailwind CSS Navbar component"-->
-                            <!--                            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"/>-->
-                        </div>
-                    </div>
-                    <ul tabindex="0"
-                        class="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                        <li><a>Profile</a></li>
-                        <li><a>Settings</a></li>
-                        <li><a href="/logout">Logout</a></li>
-                    </ul>
-                </div>
-                {% else %}
-                <a class="btn" href="/register">Зарегистрироваться</a>
-                <a class="btn btn-neutral" href="/login">Войти</a>
-                {% endif %}
-            </div>
+<header>
+    <!-- <nav class="navbar navbar-light bg-dark">-->
+    <!--        <a class="navbar-brand" href="/">Наше приложение</a>-->
+    <!--        {% if current_user.is_authenticated %}-->
+    <!--    <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>-->
+    <!--{% else %}-->
+    <!--    <p>-->
+    <!--        <a class="btn btn-primary " href="/register">Зарегистрироваться</a>-->
+    <!--        <a class="btn btn-success" href="/login">Войти</a>-->
+    <!--    </p>-->
+    <!--{% endif %}-->
+    <!--    </nav> -->
+    <div class="navbar bg-base-300">
+        <div class="flex-1">
+            <a href="/" class="btn btn-ghost text-xl">Delay</a>
         </div>
-    </header>
-    <!-- Begin page content -->
-    <div>
-        {% block content %}{% endblock %}
+        <div class="flex gap-2">
+            <!--        <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto"/>-->
+            {% if current_user.is_authenticated %}
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                    <div class="w-10 rounded-full">
+                        {{ current_user.name[0] }}
+                        <!--                    <img-->
+                        <!--                            alt="Tailwind CSS Navbar component"-->
+                        <!--                            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"/>-->
+                    </div>
+                </div>
+                <ul tabindex="0"
+                    class="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                    <li><a>Profile</a></li>
+                    <li><a>Settings</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </div>
+            {% else %}
+            <a class="btn" href="/register">Зарегистрироваться</a>
+            <a class="btn btn-neutral" href="/login">Войти</a>
+            {% endif %}
+        </div>
     </div>
+</header>
+<!-- Begin page content -->
+<div class="flex justify-center">
+    {% block content %}{% endblock %}
+</div>
 </body>
 
 </html>
