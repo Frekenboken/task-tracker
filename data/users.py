@@ -25,6 +25,8 @@ class User(SqlAlchemyBase, UserMixin):
     short_tasks = orm.relationship("ShortTask", back_populates='user')
     common_tasks = orm.relationship("CommonTask", back_populates='user')
 
+    avatar = sqlalchemy.Column(sqlalchemy.BLOB, nullable=True)
+
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
 

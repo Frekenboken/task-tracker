@@ -13,7 +13,7 @@
     <title>{{ title }}</title>
 </head>
 
-<body>
+<body class="">
     <header>
         <!-- <nav class="navbar navbar-light bg-dark">-->
         <!--        <a class="navbar-brand" href="/">Наше приложение</a>-->
@@ -26,7 +26,7 @@
         <!--    </p>-->
         <!--{% endif %}-->
         <!--    </nav> -->
-        <div class="navbar bg-base-300">
+        <div class="navbar bg-base-300 z-10 relative">
             <div class="flex-1">
                 <a href="/" class="btn btn-ghost text-xl text-primary">Delay</a>
             </div>
@@ -36,20 +36,17 @@
                 {{ current_user.name }}
                 <div class="dropdown dropdown-end">
                     <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-                        <div class="w-10 h-10 rounded-full">
-                            {% if not 0 %}
+                        <div class="w-10 h-10 rounded-full ring ring-primary ring-offset-base-300 ring-offset-2">
+                            {% if not current_user.avatar %}
                             <div class="flex items-center justify-center w-full h-full bg-base-100">
                                 {{ current_user.name[0].upper() }}
                             </div>
                             {% else %}
-                            <img alt="Tailwind CSS Navbar component"
-                                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                            <img src="{{ url_for('user_avatar') }}" />
                             {% endif %}
                         </div>
                     </div>
-                    <ul tabindex="0"
-                        class="menu menu-md dropdown-content bg-base-300 rounded-b-lg z-1 mt-3 w-52 p-2 shadow">
-                        <li><a href="/profile">Профиль</a></li>
+                    <ul tabindex="0" class="menu menu-md dropdown-content bg-base-300 rounded-b-lg z-1 mt-3 p-2 shadow">
                         <li><a href="/settings">Настройки</a></li>
                         <li><a class="text-error" href="/logout">Выйти</a></li>
                     </ul>
@@ -62,7 +59,7 @@
         </div>
     </header>
     <!-- Begin page content -->
-    <div class="flex justify-center">
+    <div class="flex justify-center py-8">
         {% block content %}{% endblock %}
     </div>
 </body>

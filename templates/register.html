@@ -4,8 +4,8 @@
 <div class="flex justify-center">
     <div class="flex min-h-full flex-col justify-center px-6 py-12 w-150">
         <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-<!--            <img class="mx-auto h-10 w-auto"-->
-<!--                 src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">-->
+            <!--            <img class="mx-auto h-10 w-auto"-->
+            <!--                 src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">-->
             <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-200">Регистрация аккаунта</h2>
         </div>
 
@@ -54,7 +54,20 @@
 
 
                 <p>{{ form.submit(type="submit", class="btn btn-primary flex w-full") }}</p>
-                <div>{{ message }}</div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                {% for message in messages %}
+                <div role="alert" class="alert alert-warning">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
             </form>
         </div>
     </div>

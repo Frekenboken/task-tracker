@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex py-8 space-x-8">
+<div class="flex space-x-8">
     <div class="space-y-4">
         <div class="flex flex-row space-x-8 h-min">
             <script src="/static/js/calendar.js" defer></script>
@@ -17,18 +17,12 @@
                 <calendar-month></calendar-month>
             </calendar-date>
 
-            <div class="flex justify-center overflow-hidden min-w-84 min-h-84">
+            <div class="flex justify-center overflow-hidden min-w-84 min-h-84 rounded-full bg-base-300">
                 <div class="relative w-84 h-84">
 
                     <!-- Центр циферблата -->
-                    <!-- <div class="absolute inset-0 flex justify-center items-center scale-80">
-                      <div class="min-w-96 min-h-96 md:min-w-128 md:min-h-128 lg:min-w-160 lg:min-h-160 rounded-full
-        bg-[conic-gradient(from_-45deg,purple_0deg_225deg,transparent_225deg)]">
-                          <div class="min-w-96 min-h-96 md:min-w-128 md:min-h-128 lg:min-w-160 lg:min-h-160 rounded-full bg-base-100 scale-91">
-                          </div>
-                      </div>
+                    <div class="absolute inset-0 flex bg-base-100 scale-75 rounded-full"></div>
 
-                  </div> -->
                     {% for tasks_group in tasks.time.grouped %}
                     {% set index = loop.index0 %}
 
@@ -98,7 +92,7 @@
                          top: calc(50% - {{ radius }}% * cos({{ angle }}deg));
                          transform: translate(-50%, -50%);
                        ">
-                            {{ hour }}
+                            {{ hour if hour != 0 else 24}}
                         </div>
                         {% endfor %}
                     </div>

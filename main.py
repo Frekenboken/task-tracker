@@ -1,6 +1,7 @@
 import math
+import os
 import secrets
-from flask import Flask, render_template, redirect, request, make_response, session, abort
+from flask import Flask, render_template, redirect, request, make_response, session, abort, flash
 from data import db_session
 from data.users import User
 from data.news import News
@@ -9,11 +10,13 @@ from forms.newsform import NewsForm
 from forms.loginform import LoginForm
 from forms.tasksform import TimeTaskForm, ShortTaskForm, CommonTaskForm
 from forms.registerform import RegisterForm
+from forms.settingsform import SettingsForm
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_restful import reqparse, abort, Api, Resource
 
 from datetime import datetime, time
 import pytz
+from werkzeug.utils import secure_filename
 
 from utils import group_time_tasks, delta_times
 
@@ -36,9 +39,15 @@ def test():
     return render_template("test.html")
 
 
-@app.route("/")
+@app.route("/hello")
 def hello():
-    db_sess = db_session.create_session()
+    return render_template("hello.html")
+
+
+@app.route("/")
+def index():
+    if current_user.is_authenticated:
+        return redirect("/home")
     return render_template("hello.html")
 
 
@@ -74,7 +83,7 @@ def home(date):
         task.start_time = time_task_form.start_time.data
         task.end_time = time_task_form.end_time.data if time_task_form.end_time.data else time_task_form.start_time.data
         task.duration = delta_times(time_task_form.start_time.data,
-                                 time_task_form.end_time.data) if time_task_form.end_time.data else time(0, 0)
+                                    time_task_form.end_time.data) if time_task_form.end_time.data else time(0, 0)
         task.date = datetime.strptime(date, "%Y-%m-%d").date()
         current_user.time_tasks.append(task)
         db_sess.merge(current_user)
@@ -100,7 +109,8 @@ def home(date):
         db_sess.commit()
         return redirect("/home")
 
-    time_tasks = [x.to_dict() for x in db_sess.query(TimeTask).filter(TimeTask.date == date).all()]
+    time_tasks = [x.to_dict() for x in
+                  db_sess.query(TimeTask).filter(TimeTask.date == date, TimeTask.user == current_user).all()]
 
     tasks = {
         'time': {
@@ -108,10 +118,11 @@ def home(date):
             'grouped': group_time_tasks(time_tasks)
         },
         'short': {
-            'all': [x.to_dict() for x in db_sess.query(ShortTask).filter(ShortTask.date == date).all()],
+            'all': [x.to_dict() for x in
+                    db_sess.query(ShortTask).filter(ShortTask.date == date, ShortTask.user == current_user).all()],
         },
         'common': {
-            'all': [x.to_dict() for x in db_sess.query(CommonTask).all()],
+            'all': [x.to_dict() for x in db_sess.query(CommonTask).filter(CommonTask.user == current_user).all()],
         }
     }
 
@@ -148,8 +159,8 @@ def login():
 
             return redirect("/home")
 
+        flash('Неправильный логин или пароль')
         return render_template('login.html',
-                               message="Неправильный логин или пароль",
                                form=form)
     return render_template('login.html', title='Авторизация', form=form)
 
@@ -159,14 +170,14 @@ def reqister():
     form = RegisterForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
+            flash('Пароли не совпадают')
             return render_template('register.html', title='Регистрация',
-                                   form=form,
-                                   message="Пароли не совпадают")
+                                   form=form)
         db_sess = db_session.create_session()
         if db_sess.query(User).filter(User.email == form.email.data).first():
+            flash('Такой пользователь уже есть')
             return render_template('register.html', title='Регистрация',
-                                   form=form,
-                                   message="Такой пользователь уже есть")
+                                   form=form)
         user = User(
             name=form.name.data,
             email=form.email.data
@@ -176,58 +187,6 @@ def reqister():
         db_sess.commit()
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
-
-
-@app.route('/news', methods=['GET', 'POST'])
-@login_required
-def add_news():
-    form = NewsForm()
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        news = News()
-        news.title = form.title.data
-        news.content = form.content.data
-        news.is_private = form.is_private.data
-        current_user.news.append(news)
-        db_sess.merge(current_user)
-        db_sess.commit()
-        return redirect('/')
-    return render_template('news.html', title='Добавление новости',
-                           form=form)
-
-
-@app.route('/news/<int:id>', methods=['GET', 'POST'])
-@login_required
-def edit_news(id):
-    form = NewsForm()
-    if request.method == "GET":
-        db_sess = db_session.create_session()
-        news = db_sess.query(News).filter(News.id == id,
-                                          News.user == current_user
-                                          ).first()
-        if news:
-            form.title.data = news.title
-            form.content.data = news.content
-            form.is_private.data = news.is_private
-        else:
-            abort(404)
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        news = db_sess.query(News).filter(News.id == id,
-                                          News.user == current_user
-                                          ).first()
-        if news:
-            news.title = form.title.data
-            news.content = form.content.data
-            news.is_private = form.is_private.data
-            db_sess.commit()
-            return redirect('/')
-        else:
-            abort(404)
-    return render_template('news.html',
-                           title='Редактирование новости',
-                           form=form
-                           )
 
 
 @app.route('/delete_time_task', methods=['GET', 'POST'])
@@ -245,6 +204,35 @@ def news_delete():
     else:
         abort(404)
     return redirect(f'/home/{page_date}')
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    if not current_user.is_authenticated:
+        return redirect("/login")
+
+    form = SettingsForm()
+    if form.validate_on_submit():
+        if form.avatar.data:
+            try:
+                db_sess = db_session.create_session()
+                current_user.avatar = form.avatar.data.read()
+                db_sess.merge(current_user)
+                db_sess.commit()
+
+                flash('Аватар успешно обновлен!', 'success')
+            except Exception as e:
+                flash(f'Ошибка при сохранении файла', 'error')
+
+    return render_template('settings.html', form=form)
+
+
+@app.route('/user_avatar')
+def user_avatar():
+    response = make_response(current_user.avatar)
+    response.headers.set('Content-Type', 'image/jpeg')
+    response.headers.set('Content-Disposition', 'inline', filename='avatar.jpg')
+    return response
 
 
 @app.route('/logout')
