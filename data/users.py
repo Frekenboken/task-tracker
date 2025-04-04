@@ -18,7 +18,6 @@ class User(SqlAlchemyBase, UserMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
-    api_key = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     time_zone = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     time_tasks = orm.relationship("TimeTask", back_populates='user')

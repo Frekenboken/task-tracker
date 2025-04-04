@@ -4,6 +4,8 @@ from sqlalchemy import orm
 
 from .db_session import SqlAlchemyBase
 
+from utils import generate_random_color
+
 
 class TimeTask(SqlAlchemyBase):
     __tablename__ = 'time-tasks'
@@ -17,6 +19,7 @@ class TimeTask(SqlAlchemyBase):
     duration = sqlalchemy.Column(sqlalchemy.Time, nullable=True)
     date = sqlalchemy.Column(sqlalchemy.Date)
     done = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    color = sqlalchemy.Column(sqlalchemy.String, default=generate_random_color)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
 
@@ -34,6 +37,8 @@ class TimeTask(SqlAlchemyBase):
             "end_time": str(self.end_time) if self.end_time else None,
             "duration": str(self.duration) if self.duration else None,
             "date": str(self.date),
+            "done": self.done,
+            "color": self.color,
             "created_date": str(self.created_date),
         }
 
@@ -61,6 +66,7 @@ class ShortTask(SqlAlchemyBase):
             "name": self.name,
             "description": self.description,
             "date": str(self.date),
+            "done": self.done,
             "created_date": str(self.created_date),
         }
 
@@ -86,5 +92,6 @@ class CommonTask(SqlAlchemyBase):
             "id": self.id,
             "name": self.name,
             "description": self.description,
+            "done": self.done,
             "created_date": str(self.created_date),
         }

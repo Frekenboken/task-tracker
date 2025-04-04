@@ -91,21 +91,21 @@ def home(date):
         return redirect("/home")
 
     elif request.form.get('form_type') == 'short_task' and short_task_form.validate_on_submit():
-        task = ShortTask(
-            name=short_task_form.name.data,
-            description=short_task_form.description.data,
-            date=datetime.strptime(date, "%Y-%m-%d").date(),
-        )
-        db_sess.add(task)
+        task = ShortTask()
+        task.name = short_task_form.name.data
+        task.description = short_task_form.description.data
+        task.date = datetime.strptime(date, "%Y-%m-%d").date()
+        current_user.short_tasks.append(task)
+        db_sess.merge(current_user)
         db_sess.commit()
         return redirect("/home")
 
     elif request.form.get('form_type') == 'common_task' and common_task_form.validate_on_submit():
-        task = CommonTask(
-            name=common_task_form.name.data,
-            description=common_task_form.description.data,
-        )
-        db_sess.add(task)
+        task = CommonTask()
+        task.name = common_task_form.name.data
+        task.description = common_task_form.description.data
+        current_user.common_tasks.append(task)
+        db_sess.merge(current_user)
         db_sess.commit()
         return redirect("/home")
 
@@ -190,16 +190,47 @@ def reqister():
 
 
 @app.route('/delete_time_task', methods=['GET', 'POST'])
+@app.route('/delete_short_task', methods=['GET', 'POST'])
+@app.route('/delete_common_task', methods=['GET', 'POST'])
 @login_required
-def news_delete():
+def tasks_delete():
     page_date = request.args.get('page_date', default=None)
     task_id = request.args.get('task_id', default=None)
 
     db_sess = db_session.create_session()
-    task = db_sess.query(TimeTask).filter(TimeTask.id == task_id, TimeTask.user == current_user).first()
+    if request.path == '/delete_time_task':
+        task = db_sess.query(TimeTask).filter(TimeTask.id == task_id, TimeTask.user == current_user).first()
+    elif request.path == '/delete_short_task':
+        task = db_sess.query(ShortTask).filter(ShortTask.id == task_id, ShortTask.user == current_user).first()
+    else:
+        task = db_sess.query(CommonTask).filter(CommonTask.id == task_id, CommonTask.user == current_user).first()
 
     if task:
         db_sess.delete(task)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect(f'/home/{page_date}')
+
+
+@app.route('/check_time_task', methods=['GET', 'POST'])
+@app.route('/check_short_task', methods=['GET', 'POST'])
+@app.route('/check_common_task', methods=['GET', 'POST'])
+@login_required
+def tasks_check():
+    page_date = request.args.get('page_date', default=None)
+    task_id = request.args.get('task_id', default=None)
+
+    db_sess = db_session.create_session()
+    if request.path == '/check_time_task':
+        task = db_sess.query(TimeTask).filter(TimeTask.id == task_id, TimeTask.user == current_user).first()
+    elif request.path == '/check_short_task':
+        task = db_sess.query(ShortTask).filter(ShortTask.id == task_id, ShortTask.user == current_user).first()
+    else:
+        task = db_sess.query(CommonTask).filter(CommonTask.id == task_id, CommonTask.user == current_user).first()
+
+    if task:
+        task.done = not task.done
         db_sess.commit()
     else:
         abort(404)

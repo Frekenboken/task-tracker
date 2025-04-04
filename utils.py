@@ -1,3 +1,4 @@
+import random
 from datetime import datetime, timedelta, time
 
 
@@ -14,7 +15,6 @@ def delta_times(start_time, end_time):
     minutes, seconds = divmod(remainder, 60)
 
     return time(hours, minutes, seconds)
-
 
 
 def group_time_tasks(tasks):
@@ -75,3 +75,21 @@ def are_tasks_overlapping(task1, task2):
 
     # Обычная проверка пересечения интервалов
     return max(start1, start2) < min(end1, end2)
+
+
+def generate_random_vibrant_color():
+    # Генерация только насыщенных цветов
+    return "#{:02X}{:02X}{:02X}".format(
+        random.choice([0, 255]),
+        random.randint(0, 255),
+        random.randint(0, 255)
+    )
+
+
+def generate_random_color():
+    # Генерируем три случайных числа для R, G, B (0-255)
+    r = random.randint(0, 255)
+    g = random.randint(0, 255)
+    b = random.randint(0, 255)
+    # Форматируем в HEX строку (#RRGGBB)
+    return "#{:02x}{:02x}{:02x}".format(r, g, b).upper()
