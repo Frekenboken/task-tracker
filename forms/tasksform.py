@@ -6,12 +6,13 @@ from wtforms.validators import DataRequired, Optional, ValidationError
 def validate_times(form, field):
     # Если оба времени заполнены
     if form.start_time.data and form.end_time.data:
-        if form.start_time.data >= form.end_time.data:
+        if form.start_time.data > form.end_time.data:
             raise ValidationError('Время окончания должно быть позже времени начала')
 
 
 class TimeTaskForm(FlaskForm):
     form_type = HiddenField(default='time_task')
+    edit_id = HiddenField(default=None)
 
     name = StringField('Имя', validators=[DataRequired()])
     description = TextAreaField('Описание', validators=[])
@@ -22,6 +23,7 @@ class TimeTaskForm(FlaskForm):
 
 class ShortTaskForm(FlaskForm):
     form_type = HiddenField(default='short_task')
+    edit_id = HiddenField(default=None)
 
     name = StringField('Имя', validators=[DataRequired()])
     description = TextAreaField('Описание', validators=[])
@@ -30,6 +32,7 @@ class ShortTaskForm(FlaskForm):
 
 class CommonTaskForm(FlaskForm):
     form_type = HiddenField(default='common_task')
+    edit_id = HiddenField(default=None)
 
     name = StringField('Имя', validators=[DataRequired()])
     description = TextAreaField('Описание', validators=[])

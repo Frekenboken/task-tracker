@@ -1,30 +1,22 @@
 import datetime
-import sqlalchemy
 from flask_login import UserMixin
-from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
+from .db_session import db
 
-from .db_session import SqlAlchemyBase
-
-
-class User(SqlAlchemyBase, UserMixin):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer,
-                           primary_key=True, autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    email = sqlalchemy.Column(sqlalchemy.String,
-                              index=True, unique=True, nullable=True)
-    hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime,
-                                     default=datetime.datetime.now)
-    time_zone = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable=True)
+    email = db.Column(db.String, index=True, unique=True, nullable=True)
+    hashed_password = db.Column(db.String, nullable=True)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    time_zone = db.Column(db.String, nullable=True)
+    avatar = db.Column(db.BLOB, nullable=True)
 
-    time_tasks = orm.relationship("TimeTask", back_populates='user')
-    short_tasks = orm.relationship("ShortTask", back_populates='user')
-    common_tasks = orm.relationship("CommonTask", back_populates='user')
-
-    avatar = sqlalchemy.Column(sqlalchemy.BLOB, nullable=True)
+    time_tasks = db.relationship("TimeTask", back_populates='user')
+    short_tasks = db.relationship("ShortTask", back_populates='user')
+    common_tasks = db.relationship("CommonTask", back_populates='user')
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
@@ -39,6 +31,5 @@ class User(SqlAlchemyBase, UserMixin):
             "email": self.email,
             "hashed_password": self.hashed_password,
             "created_date": self.created_date,
-            "api_key": self.api_key,
             "time_zone": self.time_zone,
         }

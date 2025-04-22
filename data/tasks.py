@@ -1,32 +1,23 @@
 import datetime
-import sqlalchemy
-from sqlalchemy import orm
-
-from .db_session import SqlAlchemyBase
-
+from .db_session import db
 from utils import generate_random_color
 
-
-class TimeTask(SqlAlchemyBase):
+class TimeTask(db.Model):
     __tablename__ = 'time-tasks'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer,
-                           primary_key=True, autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String)
-    description = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    start_time = sqlalchemy.Column(sqlalchemy.Time)
-    end_time = sqlalchemy.Column(sqlalchemy.Time, nullable=True)
-    duration = sqlalchemy.Column(sqlalchemy.Time, nullable=True)
-    date = sqlalchemy.Column(sqlalchemy.Date)
-    done = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
-    color = sqlalchemy.Column(sqlalchemy.String, default=generate_random_color)
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime,
-                                     default=datetime.datetime.now)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String)
+    description = db.Column(db.String, nullable=True)
+    start_time = db.Column(db.Time)
+    end_time = db.Column(db.Time, nullable=True)
+    duration = db.Column(db.Time, nullable=True)
+    date = db.Column(db.Date)
+    done = db.Column(db.Boolean, default=False)
+    color = db.Column(db.String, default=generate_random_color)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    user_id = sqlalchemy.Column(sqlalchemy.Integer,
-                                sqlalchemy.ForeignKey("users.id"))
-
-    user = orm.relationship('User')
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user = db.relationship('User', back_populates='time_tasks')
 
     def to_dict(self):
         return {
@@ -43,22 +34,18 @@ class TimeTask(SqlAlchemyBase):
         }
 
 
-class ShortTask(SqlAlchemyBase):
+class ShortTask(db.Model):
     __tablename__ = 'short-tasks'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer,
-                           primary_key=True, autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String)
-    description = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    date = sqlalchemy.Column(sqlalchemy.Date)
-    done = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime,
-                                     default=datetime.datetime.now)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String)
+    description = db.Column(db.String, nullable=True)
+    date = db.Column(db.Date)
+    done = db.Column(db.Boolean, default=False)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    user_id = sqlalchemy.Column(sqlalchemy.Integer,
-                                sqlalchemy.ForeignKey("users.id"))
-
-    user = orm.relationship('User')
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user = db.relationship('User', back_populates='short_tasks')
 
     def to_dict(self):
         return {
@@ -71,21 +58,17 @@ class ShortTask(SqlAlchemyBase):
         }
 
 
-class CommonTask(SqlAlchemyBase):
+class CommonTask(db.Model):
     __tablename__ = 'common-tasks'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer,
-                           primary_key=True, autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String)
-    description = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    done = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime,
-                                     default=datetime.datetime.now)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String)
+    description = db.Column(db.String, nullable=True)
+    done = db.Column(db.Boolean, default=False)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    user_id = sqlalchemy.Column(sqlalchemy.Integer,
-                                sqlalchemy.ForeignKey("users.id"))
-
-    user = orm.relationship('User')
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user = db.relationship('User', back_populates='common_tasks')
 
     def to_dict(self):
         return {

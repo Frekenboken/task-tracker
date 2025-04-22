@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="sunset" style="scrollbar-gutter: auto !important;">
+<html lang="en" data-theme="caramellatte" style="scrollbar-gutter: auto !important;">
 
 <head>
     <meta charset="utf-8">
@@ -35,8 +35,8 @@
                 {% if current_user.is_authenticated %}
                 {{ current_user.name }}
                 <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-                        <div class="w-10 h-10 rounded-full ring ring-primary ring-offset-base-300 ring-offset-2">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar w-10 h-10">
+                        <div class="w-full h-full rounded-full ring ring-primary ring-offset-base-300 ring-offset-2">
                             {% if not current_user.avatar %}
                             <div class="flex items-center justify-center w-full h-full bg-base-100">
                                 {{ current_user.name[0].upper() }}

@@ -1,24 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto">
-    <h2 class="text-2xl font-bold mb-6">Настройки профиля</h2>
-
-    <div class="card bg-base-200 shadow-xl">
+<div class="max-w-3xl mx-auto space-y-6">
+    <h2 class="text-2xl font-bold">Настройки профиля</h2>
+    <div class="card bg-base-200 shadow-md">
         <form method="POST" enctype="multipart/form-data" class="card-body">
             {{ form.hidden_tag() }}
 
-            <div class="flex flex-col md:flex-row gap-6 items-center mb-6">
+            <div class="flex flex-col md:flex-row gap-6 items-center">
                 <!-- Аватар с предпросмотром -->
                 <div class="avatar">
                     <div id="avatar-img-place"
-                        class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                         class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                         {% if not current_user.avatar %}
                         <div class="flex items-center justify-center w-full h-full bg-base-100">
                             {{ current_user.name[0].upper() }}
                         </div>
                         {% else %}
-                        <img id="avatar-preview" src="{{ url_for('user_avatar') }}" class="object-cover" />
+                        <img id="avatar-preview" src="{{ url_for('user_avatar') }}" class="object-cover"/>
                         {% endif %}
                     </div>
                 </div>
@@ -54,7 +53,7 @@
     <div role="alert" class="alert alert-success">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <span>{{ message }}</span>
     </div>
@@ -62,7 +61,7 @@
     <div role="alert" class="alert alert-error">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <span>{{ message }}</span>
     </div>
@@ -70,6 +69,14 @@
     {% endfor %}
     {% endif %}
     {% endwith %}
+
+    <!-- Карточка с цитатой -->
+    <div class="card bg-base-300/80 shadow-md">
+        <div class="card-body">
+            <blockquote class="italic text-xl">"{{ quote.quote }}"</blockquote>
+            <cite class="text-right text-base-content/65 block mt-2">— {{ quote.author }}</cite>
+        </div>
+    </div>
 </div>
 
 <!-- Скрипт для предпросмотра аватара -->

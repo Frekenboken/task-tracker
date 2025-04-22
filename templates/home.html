@@ -5,7 +5,7 @@
     <div class="space-y-4">
         <div class="flex flex-row space-x-8 h-min">
             <script src="/static/js/calendar.js" defer></script>
-            <calendar-date id="calendar" class="cally bg-base-300 border border-base-300 shadow-lg rounded-box w-70">
+            <calendar-date id="calendar" class="cally bg-base-300 border border-base-300 shadow-md rounded-box w-70">
                 <svg aria-label="Previous" class="fill-current size-4" slot="previous"
                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path>
@@ -17,7 +17,7 @@
                 <calendar-month></calendar-month>
             </calendar-date>
 
-            <div class="flex justify-center overflow-hidden min-w-84 min-h-84 rounded-full bg-base-300">
+            <div class="flex justify-center overflow-hidden min-w-84 min-h-84 rounded-full bg-base-300 shadow-md">
                 <div class="relative w-84 h-84">
 
                     <!-- Центр циферблата -->
@@ -106,7 +106,7 @@
                 <div class="w-full space-y-2 overflow-hidden">
                     {% for task in tasks.common.all %}
                     <div
-                        class="card card-side bg-base-200 shadow-xl w-full my-2 hover:shadow-md transition-shadow overflow-hidden {% if task.done %}opacity-50{% endif %}">
+                        class="card card-side bg-base-200 shadow-md w-full my-2 hover:shadow-xs transition-shadow overflow-hidden {% if task.done %}opacity-50{% endif %}">
                         <div class="card-body flex flex-col sm:flex-row items-center justify-between p-4 gap-4 w-full">
                             <!-- Чекбокс и основное содержимое -->
                             <div class="flex items-center space-x-4 w-full sm:w-auto sm:flex-1 min-w-0">
@@ -121,13 +121,14 @@
                             </div>
                             <!-- Кнопки действий -->
                             <div class="flex space-x-2 shrink-0">
-                                <!-- <button class="btn btn-sm btn-ghost btn-square">
+                                <a href="/home/{{ date }}?edit_task=common.{{ task.id }}"
+                                    class="btn btn-sm btn-ghost btn-square">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
-                                </button> -->
+                                </a>
                                 <a href="/delete_common_task?page_date={{ date }}&task_id={{ task.id }}"
                                     class="btn btn-sm btn-ghost btn-square text-error">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -154,7 +155,7 @@
             <div class="w-full space-y-2 overflow-hidden">
                 {% for task in tasks.time.all %}
                 <div
-                    class="card card-side bg-base-200 shadow-xl w-full my-2 hover:shadow-md transition-shadow overflow-hidden {% if task.done %}opacity-50{% endif %}">
+                    class="card card-side bg-base-200 shadow-md w-full my-2 hover:shadow-xs transition-shadow overflow-hidden {% if task.done %}opacity-50{% endif %}">
                     <!-- Цветная полоса слева -->
                     <div class="w-2 rounded-l-lg" style="background-color: {{ task.color }};"></div>
 
@@ -226,13 +227,14 @@
                         </div>
                         <!-- Кнопки действий -->
                         <div class="flex space-x-2 shrink-0">
-                            <!-- <a class="btn btn-sm btn-ghost btn-square">
+                            <a href="/home/{{ date }}?edit_task=time.{{ task.id }}"
+                                class="btn btn-sm btn-ghost btn-square">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
-                            </a> -->
+                            </a>
                             <a href="/delete_time_task?page_date={{ date }}&task_id={{ task.id }}"
                                 class="btn btn-sm btn-ghost btn-square text-error">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -256,7 +258,7 @@
             <div class="w-full space-y-2 overflow-hidden">
                 {% for task in tasks.short.all %}
                 <div
-                    class="card card-side bg-base-200 shadow-xl w-full my-2 hover:shadow-md transition-shadow overflow-hidden {% if task.done %}opacity-50{% endif %}">
+                    class="card card-side bg-base-200 shadow-md w-full my-2 hover:shadow-xs transition-shadow overflow-hidden {% if task.done %}opacity-50{% endif %}">
                     <div class="card-body flex flex-col sm:flex-row items-center justify-between p-4 gap-4 w-full">
                         <!-- Чекбокс и основное содержимое -->
                         <div class="flex items-center space-x-4 w-full sm:w-auto sm:flex-1 min-w-0">
@@ -271,13 +273,14 @@
                         </div>
                         <!-- Кнопки действий -->
                         <div class="flex space-x-2 shrink-0">
-                            <!-- <button class="btn btn-sm btn-ghost btn-square">
+                            <a href="/home/{{ date }}?edit_task=short.{{ task.id }}"
+                                class="btn btn-sm btn-ghost btn-square">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
-                            </button> -->
+                            </a>
                             <a href="/delete_short_task?page_date={{ date }}&task_id={{ task.id }}"
                                 class="btn btn-sm btn-ghost btn-square text-error">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -416,13 +419,39 @@
         <button>close</button>
     </form>
 </dialog>
-{% if form_errors.time %}
+
+<script>
+    // Находим все модальные окна
+    const modals = document.querySelectorAll('dialog.modal');
+
+    // Для каждого модального окна добавляем обработчик закрытия
+    modals.forEach((modal) => {
+        modal.addEventListener('close', () => {
+            // Находим ВСЕ формы внутри этого диалога (если их несколько)
+            const forms = modal.querySelectorAll('form:not([method="dialog"])');
+            forms.forEach((form) => {
+                // Сбрасываем форму
+                form.reset();
+
+                // Дополнительная проверка для конкретного модального окна
+                // Если в форме есть поле edit_id с непустым значением
+                const editIdInput = form.querySelector('[name="edit_id"]');
+                if (editIdInput && editIdInput.value) {
+                    // Перезагружаем страницу без query параметров
+                    window.location.href = window.location.pathname;
+                }
+            });
+        });
+    });
+</script>
+
+{% if form_errors.time or forms.time.edit_id.data %}
 <script>document.getElementById("time_task_modal").showModal()</script>
 {% endif %}
-{% if form_errors.short %}
+{% if form_errors.short or forms.short.edit_id.data %}
 <script>document.getElementById("short_task_modal").showModal()</script>
 {% endif %}
-{% if form_errors.common %}
+{% if form_errors.common or forms.common.edit_id.data %}
 <script>document.getElementById("common_task_modal").showModal()</script>
 {% endif %}
 {% endblock %}

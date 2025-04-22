@@ -4,34 +4,36 @@ import secrets
 from flask import Flask, render_template, redirect, request, make_response, session, abort, flash
 from data import db_session
 from data.users import User
-from data.news import News
 from data.tasks import ShortTask, TimeTask, CommonTask
-from forms.newsform import NewsForm
+from data.db_session import init_db
+from data.db_session import db
 from forms.loginform import LoginForm
 from forms.tasksform import TimeTaskForm, ShortTaskForm, CommonTaskForm
 from forms.registerform import RegisterForm
 from forms.settingsform import SettingsForm
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_restful import reqparse, abort, Api, Resource
+from flask_sqlalchemy import SQLAlchemy
 
 from datetime import datetime, time
 import pytz
 from werkzeug.utils import secure_filename
 
-from utils import group_time_tasks, delta_times
+from utils import group_time_tasks, delta_times, get_random_quote
 
 app = Flask(__name__)
 api = Api(app)
 app.config['SECRET_KEY'] = secrets.token_hex(16)
-db_session.global_init("data/database.db")
+
+init_db(app, "../data/database.db")
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
+    return db.session.query(User).get(user_id)
 
 
 @app.route("/test")
@@ -56,8 +58,7 @@ def home_base():
     if not current_user.is_authenticated:
         return redirect("/login")
 
-    db_sess = db_session.create_session()
-    user_time_zone = str(db_sess.query(User.time_zone).filter(User.email == current_user.email).first()[0])
+    user_time_zone = str(db.session.query(User.time_zone).filter(User.email == current_user.email).first()[0])
 
     time_zone = pytz.timezone(user_time_zone)
     current_time = datetime.now(time_zone)
@@ -74,43 +75,105 @@ def home(date):
     short_task_form = ShortTaskForm()
     common_task_form = CommonTaskForm()
 
-    db_sess = db_session.create_session()
-
     if request.form.get('form_type') == 'time_task' and time_task_form.validate_on_submit():
-        task = TimeTask()
-        task.name = time_task_form.name.data
-        task.description = time_task_form.description.data
-        task.start_time = time_task_form.start_time.data
-        task.end_time = time_task_form.end_time.data if time_task_form.end_time.data else time_task_form.start_time.data
-        task.duration = delta_times(time_task_form.start_time.data,
-                                    time_task_form.end_time.data) if time_task_form.end_time.data else time(0, 0)
-        task.date = datetime.strptime(date, "%Y-%m-%d").date()
-        current_user.time_tasks.append(task)
-        db_sess.merge(current_user)
-        db_sess.commit()
-        return redirect("/home")
+        print(time_task_form.data)
+        if not time_task_form.edit_id.data:
+            task = TimeTask()
+
+            task.name = time_task_form.name.data
+            task.description = time_task_form.description.data
+            task.start_time = time_task_form.start_time.data
+            task.end_time = time_task_form.end_time.data if time_task_form.end_time.data else time_task_form.start_time.data
+            task.duration = delta_times(time_task_form.start_time.data,
+                                        time_task_form.end_time.data) if time_task_form.end_time.data else time(0, 0)
+            task.date = datetime.strptime(date, "%Y-%m-%d").date()
+            current_user.time_tasks.append(task)
+            db.session.merge(current_user)
+        else:
+            task = db.session.query(TimeTask).filter(TimeTask.id == time_task_form.edit_id.data,
+                                                  TimeTask.user == current_user
+                                                  ).first()
+
+            task.name = time_task_form.name.data
+            task.description = time_task_form.description.data
+            task.start_time = time_task_form.start_time.data
+            task.end_time = time_task_form.end_time.data if time_task_form.end_time.data else time_task_form.start_time.data
+            task.duration = delta_times(time_task_form.start_time.data,
+                                        time_task_form.end_time.data) if time_task_form.end_time.data else time(0, 0)
+
+        db.session.commit()
+
+        return redirect(f"/home/{date}")
 
     elif request.form.get('form_type') == 'short_task' and short_task_form.validate_on_submit():
-        task = ShortTask()
-        task.name = short_task_form.name.data
-        task.description = short_task_form.description.data
-        task.date = datetime.strptime(date, "%Y-%m-%d").date()
-        current_user.short_tasks.append(task)
-        db_sess.merge(current_user)
-        db_sess.commit()
-        return redirect("/home")
+        if not short_task_form.edit_id.data:
+            task = ShortTask()
+            task.name = short_task_form.name.data
+            task.description = short_task_form.description.data
+            task.date = datetime.strptime(date, "%Y-%m-%d").date()
+            current_user.short_tasks.append(task)
+            db.session.merge(current_user)
+        else:
+            task = db.session.query(ShortTask).filter(ShortTask.id == short_task_form.edit_id.data,
+                                                   ShortTask.user == current_user
+                                                   ).first()
+            task.name = short_task_form.name.data
+            task.description = short_task_form.description.data
+
+        db.session.commit()
+
+        return redirect(f"/home/{date}")
 
     elif request.form.get('form_type') == 'common_task' and common_task_form.validate_on_submit():
-        task = CommonTask()
-        task.name = common_task_form.name.data
-        task.description = common_task_form.description.data
-        current_user.common_tasks.append(task)
-        db_sess.merge(current_user)
-        db_sess.commit()
-        return redirect("/home")
+        if not common_task_form.edit_id.data:
+            task = CommonTask()
+
+            task.name = common_task_form.name.data
+            task.description = common_task_form.description.data
+            current_user.common_tasks.append(task)
+            db.session.merge(current_user)
+        else:
+            task = db.session.query(CommonTask).filter(CommonTask.id == common_task_form.edit_id.data,
+                                                    CommonTask.user == current_user
+                                                    ).first()
+            task.name = common_task_form.name.data
+            task.description = common_task_form.description.data
+
+        db.session.commit()
+
+        return redirect(f"/home/{date}")
+
+    if request.args.get('edit_task'):
+        edit_task_type, edit_task_id = request.args.get('edit_task').split('.')
+
+        if edit_task_type == 'time':
+            task = db.session.query(TimeTask).filter(TimeTask.id == int(edit_task_id),
+                                                  TimeTask.user == current_user
+                                                  ).first()
+            time_task_form.edit_id.data = task.id
+            time_task_form.name.data = task.name
+            time_task_form.description.data = task.description
+            time_task_form.start_time.data = task.start_time
+            time_task_form.end_time.data = task.end_time
+
+        elif edit_task_type == 'short':
+            task = db.session.query(ShortTask).filter(ShortTask.id == int(edit_task_id),
+                                                   ShortTask.user == current_user
+                                                   ).first()
+            short_task_form.edit_id.data = task.id
+            short_task_form.name.data = task.name
+            short_task_form.description.data = task.description
+
+        elif edit_task_type == 'common':
+            task = db.session.query(CommonTask).filter(CommonTask.id == int(edit_task_id),
+                                                    CommonTask.user == current_user
+                                                    ).first()
+            common_task_form.edit_id.data = task.id
+            common_task_form.name.data = task.name
+            common_task_form.description.data = task.description
 
     time_tasks = [x.to_dict() for x in
-                  db_sess.query(TimeTask).filter(TimeTask.date == date, TimeTask.user == current_user).all()]
+                  db.session.query(TimeTask).filter(TimeTask.date == date, TimeTask.user == current_user).all()]
 
     tasks = {
         'time': {
@@ -119,10 +182,10 @@ def home(date):
         },
         'short': {
             'all': [x.to_dict() for x in
-                    db_sess.query(ShortTask).filter(ShortTask.date == date, ShortTask.user == current_user).all()],
+                    db.session.query(ShortTask).filter(ShortTask.date == date, ShortTask.user == current_user).all()],
         },
         'common': {
-            'all': [x.to_dict() for x in db_sess.query(CommonTask).filter(CommonTask.user == current_user).all()],
+            'all': [x.to_dict() for x in db.session.query(CommonTask).filter(CommonTask.user == current_user).all()],
         }
     }
 
@@ -149,13 +212,12 @@ def home(date):
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        user = db.session.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
 
             user.time_zone = form.time_zone.data
-            db_sess.commit()
+            db.session.commit()
 
             return redirect("/home")
 
@@ -173,8 +235,7 @@ def reqister():
             flash('Пароли не совпадают')
             return render_template('register.html', title='Регистрация',
                                    form=form)
-        db_sess = db_session.create_session()
-        if db_sess.query(User).filter(User.email == form.email.data).first():
+        if db.session.query(User).filter(User.email == form.email.data).first():
             flash('Такой пользователь уже есть')
             return render_template('register.html', title='Регистрация',
                                    form=form)
@@ -183,8 +244,8 @@ def reqister():
             email=form.email.data
         )
         user.set_password(form.password.data)
-        db_sess.add(user)
-        db_sess.commit()
+        db.session.add(user)
+        db.session.commit()
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
 
@@ -197,17 +258,16 @@ def tasks_delete():
     page_date = request.args.get('page_date', default=None)
     task_id = request.args.get('task_id', default=None)
 
-    db_sess = db_session.create_session()
     if request.path == '/delete_time_task':
-        task = db_sess.query(TimeTask).filter(TimeTask.id == task_id, TimeTask.user == current_user).first()
+        task = db.session.query(TimeTask).filter(TimeTask.id == task_id, TimeTask.user == current_user).first()
     elif request.path == '/delete_short_task':
-        task = db_sess.query(ShortTask).filter(ShortTask.id == task_id, ShortTask.user == current_user).first()
+        task = db.session.query(ShortTask).filter(ShortTask.id == task_id, ShortTask.user == current_user).first()
     else:
-        task = db_sess.query(CommonTask).filter(CommonTask.id == task_id, CommonTask.user == current_user).first()
+        task = db.session.query(CommonTask).filter(CommonTask.id == task_id, CommonTask.user == current_user).first()
 
     if task:
-        db_sess.delete(task)
-        db_sess.commit()
+        db.session.delete(task)
+        db.session.commit()
     else:
         abort(404)
     return redirect(f'/home/{page_date}')
@@ -221,17 +281,16 @@ def tasks_check():
     page_date = request.args.get('page_date', default=None)
     task_id = request.args.get('task_id', default=None)
 
-    db_sess = db_session.create_session()
     if request.path == '/check_time_task':
-        task = db_sess.query(TimeTask).filter(TimeTask.id == task_id, TimeTask.user == current_user).first()
+        task = db.session.query(TimeTask).filter(TimeTask.id == task_id, TimeTask.user == current_user).first()
     elif request.path == '/check_short_task':
-        task = db_sess.query(ShortTask).filter(ShortTask.id == task_id, ShortTask.user == current_user).first()
+        task = db.session.query(ShortTask).filter(ShortTask.id == task_id, ShortTask.user == current_user).first()
     else:
-        task = db_sess.query(CommonTask).filter(CommonTask.id == task_id, CommonTask.user == current_user).first()
+        task = db.session.query(CommonTask).filter(CommonTask.id == task_id, CommonTask.user == current_user).first()
 
     if task:
         task.done = not task.done
-        db_sess.commit()
+        db.session.commit()
     else:
         abort(404)
     return redirect(f'/home/{page_date}')
@@ -246,16 +305,15 @@ def settings():
     if form.validate_on_submit():
         if form.avatar.data:
             try:
-                db_sess = db_session.create_session()
                 current_user.avatar = form.avatar.data.read()
-                db_sess.merge(current_user)
-                db_sess.commit()
+                db.session.merge(current_user)
+                db.session.commit()
 
                 flash('Аватар успешно обновлен!', 'success')
             except Exception as e:
                 flash(f'Ошибка при сохранении файла', 'error')
 
-    return render_template('settings.html', form=form)
+    return render_template('settings.html', form=form, quote=get_random_quote())
 
 
 @app.route('/user_avatar')

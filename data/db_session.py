@@ -1,32 +1,19 @@
-import sqlalchemy as sa
-import sqlalchemy.orm as orm
-from sqlalchemy.orm import Session
+from flask_sqlalchemy import SQLAlchemy
 
-SqlAlchemyBase = orm.declarative_base()
-
-__factory = None
+db = SQLAlchemy()
 
 
-def global_init(db_file):
-    global __factory
-
-    if __factory:
-        return
-
+def init_db(app, db_file):
     if not db_file or not db_file.strip():
         raise Exception("Необходимо указать файл базы данных.")
 
     conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
     print(f"Подключение к базе данных по адресу {conn_str}")
 
-    engine = sa.create_engine(conn_str, echo=True)
-    __factory = orm.sessionmaker(bind=engine)
+    app.config['SQLALCHEMY_DATABASE_URI'] = conn_str
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    from . import __all_models
+    db.init_app(app)
 
-    SqlAlchemyBase.metadata.create_all(engine)
-
-
-def create_session() -> Session:
-    global __factory
-    return __factory()
+    with app.app_context():
+        db.create_all()

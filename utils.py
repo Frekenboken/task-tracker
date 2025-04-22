@@ -1,6 +1,8 @@
 import random
 from datetime import datetime, timedelta, time
 
+import requests
+
 
 def delta_times(start_time, end_time):
     today = datetime.today().date()
@@ -93,3 +95,33 @@ def generate_random_color():
     b = random.randint(0, 255)
     # Форматируем в HEX строку (#RRGGBB)
     return "#{:02x}{:02x}{:02x}".format(r, g, b).upper()
+
+
+import requests
+
+
+def get_random_quote():
+    base_result = {
+        "quote": "",
+        "author": "Неизвестен",
+        "error": ""
+    }
+
+    params = {
+        "method": "getQuote",
+        "format": "json",
+        "lang": "ru"
+    }
+
+    try:
+        response = requests.get("http://api.forismatic.com/api/1.0/", params=params, timeout=5)
+        if response.status_code == 200:
+            quote_data = response.json()
+            base_result["quote"] = quote_data.get("quoteText", "")
+            base_result["author"] = quote_data.get("quoteAuthor", "Неизвестен")
+        else:
+            base_result["error"] = f"HTTP ошибка: {response.status_code}"
+    except requests.exceptions.RequestException as e:
+        base_result["error"] = f"Ошибка запроса: {str(e)}"
+
+    return base_result
