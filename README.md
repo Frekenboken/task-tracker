@@ -60,34 +60,36 @@
 
 ### Реализация
 #### Структура
+```markdown
 /
 ├── data
-│   ├── `__all_models.py`
-│   ├── `database.db` - база данных
-│   ├── `db_session.py`
-│   ├── `tasks.py` - модели задач
-│   └── `users.py` - модель пользователя
+│   ├── __all_models.py
+│   ├── database.db - база данных
+│   ├── db_session.py
+│   ├── tasks.py - модели задач
+│   └── users.py - модель пользователя
 ├── forms - инпут формы
-│   ├── `loginform.py`
-│   ├── `registerform.py`
-│   ├── `settingsform.py`
-│   └── `tasksform.py`
+│   ├── loginform.py
+│   ├── registerform.py
+│   ├── settingsform.py
+│   └── tasksform.py
 ├── static
 │   ├── css
-│   │   └── `style.css` - генерируемые стили
+│   │   └── style.css - генерируемые стили
 │   └── js
-│       └── `calendar.js` - скрипт для виджета календаря
+│       └── calendar.js - скрипт для виджета календаря
 ├── templates - шаблоны страниц
-│   ├── `base.html`
-│   ├── `hello.html`
-│   ├── `home.html`
-│   ├── `login.html`
-│   ├── `register.html`
-│   └── `settings.html`
-├── `app.css` - конфигурационный файл tailwindcss и daisyui
-├── `main.py` - основной файл со всеми хэндлерами
-├── `README.md`
-└── `utils.py` - вспомогательные функции (группировка, генераторы цветов, разница во времени, пересечение задач по времени, получение фразы из formasticAPI)
+│   ├── base.html
+│   ├── hello.html
+│   ├── home.html
+│   ├── login.html
+│   ├── register.html
+│   └── settings.html
+├── app.css - конфигурационный файл tailwindcss и daisyui
+├── main.py - основной файл со всеми хэндлерами
+├── README.md
+└── utils.py - вспомогательные функции
+```
 
 #### Особенности
 - Виджет часов имеет бесконечное количество уровней за счет scale-функции во избежание поломки виджета
