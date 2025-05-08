@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto space-y-6">
+<div class="max-w-3xl space-y-6 mx-3">
     <h2 class="text-2xl font-bold">Настройки профиля</h2>
+
     <div class="card bg-base-200 shadow-md">
-        <form method="POST" enctype="multipart/form-data" class="card-body">
+        <form method="POST" enctype="multipart/form-data" class="card-body p-5">
             {{ form.hidden_tag() }}
 
             <div class="flex flex-col md:flex-row gap-6 items-center">
@@ -28,8 +29,9 @@
                     {{ form.avatar.label(class="block text-sm/6 font-medium") }}<br>
                     {{ form.avatar(class="file-input file-input-bordered file-input-primary w-full",
                     maxlength="2097152") }}
-                    <label class="label">
-                        <span class="label-text-alt text-gray-500">Поддерживаемые форматы: jpg, jpeg, png, gif (до
+                    <label>
+                        <span class="label-text-alt text-gray-500 text-ellipsis">Поддерживаемые форматы: jpg, jpeg, png,
+                            gif (до
                             2MB)</span>
                     </label>
                     {% for error in form.avatar.errors %}
@@ -45,7 +47,9 @@
                 {{ form.submit(class="btn btn-primary") }}
             </div>
         </form>
+
     </div>
+
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     {% for category, message in messages %}

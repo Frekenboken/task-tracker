@@ -1,3 +1,4 @@
+import locale
 import math
 import os
 import secrets
@@ -15,7 +16,7 @@ from flask_login import LoginManager, login_user, logout_user, current_user, log
 from flask_restful import reqparse, abort, Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 import pytz
 from werkzeug.utils import secure_filename
 
@@ -30,15 +31,13 @@ init_db(app, "../data/database.db")
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+# Устанавливаем русскую локаль (для Windows может быть 'rus' или 'ru_RU.UTF-8')
+locale.setlocale(locale.LC_TIME, 'rus')
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.query(User).get(user_id)
-
-
-@app.route("/test")
-def test():
-    return render_template("test.html")
 
 
 @app.route("/hello")
@@ -91,8 +90,8 @@ def home(date):
             db.session.merge(current_user)
         else:
             task = db.session.query(TimeTask).filter(TimeTask.id == time_task_form.edit_id.data,
-                                                  TimeTask.user == current_user
-                                                  ).first()
+                                                     TimeTask.user == current_user
+                                                     ).first()
 
             task.name = time_task_form.name.data
             task.description = time_task_form.description.data
@@ -115,8 +114,8 @@ def home(date):
             db.session.merge(current_user)
         else:
             task = db.session.query(ShortTask).filter(ShortTask.id == short_task_form.edit_id.data,
-                                                   ShortTask.user == current_user
-                                                   ).first()
+                                                      ShortTask.user == current_user
+                                                      ).first()
             task.name = short_task_form.name.data
             task.description = short_task_form.description.data
 
@@ -134,8 +133,8 @@ def home(date):
             db.session.merge(current_user)
         else:
             task = db.session.query(CommonTask).filter(CommonTask.id == common_task_form.edit_id.data,
-                                                    CommonTask.user == current_user
-                                                    ).first()
+                                                       CommonTask.user == current_user
+                                                       ).first()
             task.name = common_task_form.name.data
             task.description = common_task_form.description.data
 
@@ -148,8 +147,8 @@ def home(date):
 
         if edit_task_type == 'time':
             task = db.session.query(TimeTask).filter(TimeTask.id == int(edit_task_id),
-                                                  TimeTask.user == current_user
-                                                  ).first()
+                                                     TimeTask.user == current_user
+                                                     ).first()
             time_task_form.edit_id.data = task.id
             time_task_form.name.data = task.name
             time_task_form.description.data = task.description
@@ -158,16 +157,16 @@ def home(date):
 
         elif edit_task_type == 'short':
             task = db.session.query(ShortTask).filter(ShortTask.id == int(edit_task_id),
-                                                   ShortTask.user == current_user
-                                                   ).first()
+                                                      ShortTask.user == current_user
+                                                      ).first()
             short_task_form.edit_id.data = task.id
             short_task_form.name.data = task.name
             short_task_form.description.data = task.description
 
         elif edit_task_type == 'common':
             task = db.session.query(CommonTask).filter(CommonTask.id == int(edit_task_id),
-                                                    CommonTask.user == current_user
-                                                    ).first()
+                                                       CommonTask.user == current_user
+                                                       ).first()
             common_task_form.edit_id.data = task.id
             common_task_form.name.data = task.name
             common_task_form.description.data = task.description
@@ -203,6 +202,7 @@ def home(date):
 
     return render_template("home.html",
                            date=date,
+                           fdate=datetime.strptime(date, "%Y-%m-%d").date().strftime("%A, %d %B %Y"),
                            tasks=tasks,
                            forms=forms,
                            form_errors=form_errors)
@@ -250,9 +250,9 @@ def reqister():
     return render_template('register.html', title='Регистрация', form=form)
 
 
-@app.route('/delete_time_task', methods=['GET', 'POST'])
-@app.route('/delete_short_task', methods=['GET', 'POST'])
-@app.route('/delete_common_task', methods=['GET', 'POST'])
+@app.route('/delete_time_task')
+@app.route('/delete_short_task')
+@app.route('/delete_common_task')
 @login_required
 def tasks_delete():
     page_date = request.args.get('page_date', default=None)
@@ -273,9 +273,31 @@ def tasks_delete():
     return redirect(f'/home/{page_date}')
 
 
-@app.route('/check_time_task', methods=['GET', 'POST'])
-@app.route('/check_short_task', methods=['GET', 'POST'])
-@app.route('/check_common_task', methods=['GET', 'POST'])
+@app.route('/move_time_task')
+@app.route('/move_short_task')
+@login_required
+def tasks_move():
+    page_date = request.args.get('page_date', default=None)
+
+    if request.path == '/move_time_task':
+        tasks = db.session.query(TimeTask).filter(TimeTask.user == current_user, TimeTask.done.is_(False)).all()
+    elif request.path == '/move_short_task':
+        tasks = db.session.query(ShortTask).filter(ShortTask.user == current_user, ShortTask.done.is_(False)).all()
+
+    if tasks:
+        for task in tasks:
+            # Перемещаем дату задачи на следующий день
+            task.date = task.date + timedelta(days=1)
+        db.session.commit()  # Сохраняем изменения для всех задач
+    else:
+        abort(404)
+    return redirect(
+        f'/home/{(datetime.strptime(page_date, "%Y-%m-%d").date() + timedelta(days=1)).strftime('%Y-%m-%d')}')
+
+
+@app.route('/check_time_task')
+@app.route('/check_short_task')
+@app.route('/check_common_task')
 @login_required
 def tasks_check():
     page_date = request.args.get('page_date', default=None)

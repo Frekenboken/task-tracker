@@ -1,200 +1,235 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex space-x-8">
-    <div class="space-y-4">
-        <div class="flex flex-row space-x-8 h-min">
-            <script src="/static/js/calendar.js" defer></script>
-            <calendar-date id="calendar" class="cally bg-base-300 border border-base-300 shadow-md rounded-box w-70">
-                <svg aria-label="Previous" class="fill-current size-4" slot="previous"
-                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path>
-                </svg>
-                <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24">
-                    <path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path>
-                </svg>
-                <calendar-month></calendar-month>
-            </calendar-date>
+<label for="my_modal_7" class="btn btn-secondary fixed z-30 left-3 top-19 p-3 md:hidden">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
 
-            <div class="flex justify-center overflow-hidden min-w-84 min-h-84 rounded-full bg-base-300 shadow-md">
-                <div class="relative w-84 h-84">
+        <line x1="7" y1="14" x2="17" y2="14"></line>
+        <line x1="7" y1="18" x2="17" y2="18"></line>
+    </svg>
+</label>
+<!--<label for="my_modal_7" class="btn btn-secondary fixed z-100 top-17 p-2 md:hidden">-->
+<!--    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"-->
+<!--         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">-->
+<!--        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>-->
+<!--        <line x1="16" y1="2" x2="16" y2="6"></line>-->
+<!--        <line x1="8" y1="2" x2="8" y2="6"></line>-->
+<!--        <line x1="3" y1="10" x2="21" y2="10"></line>-->
+<!--    </svg>-->
+<!--    <p class="text-xs">{{ fdate.capitalize() }}</p>-->
+<!--</label>-->
 
-                    <!-- Центр циферблата -->
-                    <div class="absolute inset-0 flex bg-base-100 scale-75 rounded-full"></div>
+<div class="flex flex-col gap-y-4 gap-x-6 h-min w-full mx-3 md:flex-row md:mx-10">
+    <div class="flex flex-col items-center gap-8 relative">
+        <!--        <button class="-->
+        <!--            btn btn-secondary-->
+        <!--            absolute bottom-0 left-0-->
+        <!--            w-16 h-16 p-0-->
+        <!--            rounded-none-->
+        <!--            rounded-bl-xl-->
+        <!--            clip-triangle-top-right-->
+        <!--            ">-->
+        <!--            <span class="sr-only">Меню</span>-->
+        <!--        </button>-->
 
-                    {% for tasks_group in tasks.time.grouped %}
-                    {% set index = loop.index0 %}
 
-                    {% for task in tasks_group %}
-                    {% set start_hms = task.start_time.split(':') %}
-                    {% set start_hours = start_hms[0]|int %}
-                    {% set start_min = start_hms[1]|int %}
-                    {% set start_sec = start_hms[2]|int %}
-                    {% set start_angle = ((start_hours * 60 ** 2 + start_min * 60 + start_sec) / 86400 * 360) | int %}
+        <!--        <style>-->
+        <!--            .clip-triangle-top-right {-->
+        <!--              clip-path: polygon(0% 100%, 0% 0%, 100% 100%);-->
+        <!--            }-->
+        <!--        </style>-->
+        <p class="text-lg font-semibold">{{ fdate.capitalize() }}</p>
 
-                    {% set end_hms = task.end_time.split(':') %}
-                    {% set end_hours = end_hms[0]|int %}
-                    {% set end_min = end_hms[1]|int %}
-                    {% set end_sec = end_hms[2]|int %}
-                    {% set end_angle = ((end_hours * 60 ** 2 + end_min * 60 + end_sec) / 86400 * 360) | int -
-                    start_angle %}
+        <script src="/static/js/clock_hand.js" defer></script>
+        <div class="flex justify-center overflow-hidden min-w-84 min-h-84 rounded-full bg-base-300 shadow-md">
+            <div class="relative w-84 h-84">
 
-                    {% if end_angle == 0 %}
-                    {% set start_angle = start_angle - 1%}
-                    {% set end_angle = end_angle + 2%}
+                <!-- Центр циферблата -->
+                <div class="absolute inset-0 flex bg-base-100 scale-75 rounded-full"></div>
+
+                {% for tasks_group in tasks.time.grouped %}
+                {% set index = loop.index0 %}
+
+                {% for task in tasks_group %}
+                {% set start_hms = task.start_time.split(':') %}
+                {% set start_hours = start_hms[0]|int %}
+                {% set start_min = start_hms[1]|int %}
+                {% set start_sec = start_hms[2]|int %}
+                {% set start_angle = ((start_hours * 60 ** 2 + start_min * 60 + start_sec) / 86400 * 360) | int %}
+
+                {% set end_hms = task.end_time.split(':') %}
+                {% set end_hours = end_hms[0]|int %}
+                {% set end_min = end_hms[1]|int %}
+                {% set end_sec = end_hms[2]|int %}
+                {% set end_angle = ((end_hours * 60 ** 2 + end_min * 60 + end_sec) / 86400 * 360) | int -
+                start_angle %}
+
+                {% if end_angle == 0 %}
+                {% set start_angle = start_angle - 1%}
+                {% set end_angle = end_angle + 2%}
+                {% endif %}
+
+                <div class="absolute inset-0 flex justify-center items-center"
+                     style="transform: scale({{ 0.74 * 0.85 ** index }})">
+                    <div class="w-max h-max rounded-full"
+                         style="background: conic-gradient(from {{ start_angle }}deg, {{ task.color }} 0deg {{ end_angle }}deg, transparent {{ end_angle }}deg)">
+                        <div class="w-84 h-84 rounded-full bg-base-100 scale-88">
+                        </div>
+                    </div>
+
+                </div>
+                {% endfor %}
+                {% endfor %}
+
+                <!-- Основной круг -->
+                <!-- <div class="absolute inset-0 rounded-full border-4 border-base-400 z-1 scale-100"></div> -->
+                <div class="absolute inset-0 rounded-full border-4 border-base-400 z-1 scale-75"></div>
+
+
+                <!-- Засечки -->
+                {% for i in range(96) %}
+                {% set is_half = i % 4 %}
+                {% set angle = i * 7.5 / 2 %} <!-- 360/48 = 7.5 градусов -->
+                <!-- Поворотная трансформация для каждой засечки -->
+                <div class="absolute inset-0" style="transform: rotate({{ angle }}deg)">
+                    <!-- Длинные засечки для целых часов -->
+                    {% if not is_half %}
+                    <div class="absolute top-0 left-1/2 w-0.5 h-2.5 bg-base-content transform -translate-x-1/2">
+                    </div>
+                    <!-- Короткие засечки для получасов -->
+                    {% else %}
+                    <div class="absolute top-0 left-1/2 w-0.5 h-1 bg-neutral-content transform -translate-x-1/2">
+                    </div>
                     {% endif %}
+                </div>
+                {% endfor %}
 
-                    <div class="absolute inset-0 flex justify-center items-center"
-                        style="transform: scale({{ 0.74 * 0.85 ** index }})">
-                        <div class="w-max h-max rounded-full"
-                            style="background: conic-gradient(from {{ start_angle }}deg, {{ task.color }} 0deg {{ end_angle }}deg, transparent {{ end_angle }}deg)">
-                            <div class="w-84 h-84 rounded-full bg-base-100 scale-88">
-                            </div>
-                        </div>
+                <!-- Цифры -->
+                <div class="absolute inset-0">
+                    {% for hour in range(24) %}
+                    {% set angle = hour * 15 %} <!-- 30 градусов между цифрами -->
+                    {% set radius = 43 %} <!-- Отступ от центра в процентах -->
 
+                    <!-- Вычисляем позицию с помощью CSS-переменных -->
+                    <div class="absolute text-xs text-base-content" style="
+                             left: calc(50% + {{ radius }}% * sin({{ angle }}deg));
+                             top: calc(50% - {{ radius }}% * cos({{ angle }}deg));
+                             transform: translate(-50%, -50%);
+                           ">
+                        {{ hour if hour != 0 else 24}}
                     </div>
                     {% endfor %}
-                    {% endfor %}
+                </div>
 
-                    <!-- Основной круг -->
-                    <!-- <div class="absolute inset-0 rounded-full border-4 border-base-400 z-1 scale-100"></div> -->
-                    <div class="absolute inset-0 rounded-full border-4 border-base-400 z-1 scale-75"></div>
-
-
-                    <!-- Засечки -->
-                    {% for i in range(96) %}
-                    {% set is_half = i % 4 %}
-                    {% set angle = i * 7.5 / 2 %} <!-- 360/48 = 7.5 градусов -->
-                    <!-- Поворотная трансформация для каждой засечки -->
-                    <div class="absolute inset-0" style="transform: rotate({{ angle }}deg)">
-                        <!-- Длинные засечки для целых часов -->
-                        {% if not is_half %}
-                        <div class="absolute top-0 left-1/2 w-0.5 h-2.5 bg-base-content transform -translate-x-1/2">
-                        </div>
-                        <!-- Короткие засечки для получасов -->
-                        {% else %}
-                        <div class="absolute top-0 left-1/2 w-0.5 h-1 bg-neutral-content transform -translate-x-1/2">
-                        </div>
-                        {% endif %}
+                <div id="hand" class="absolute inset-0">
+                    <!-- Длинные засечки для целых часов -->
+                    <div class="absolute top-0 left-1/2 w-0.5 h-11 bg-secondary transform -translate-x-1/2">
                     </div>
-                    {% endfor %}
 
-                    <!-- Цифры -->
-                    <div class="absolute inset-0">
-                        {% for hour in range(24) %}
-                        {% set angle = hour * 15 %} <!-- 30 градусов между цифрами -->
-                        {% set radius = 43 %} <!-- Отступ от центра в процентах -->
-
-                        <!-- Вычисляем позицию с помощью CSS-переменных -->
-                        <div class="absolute text-xs text-base-content" style="
-                         left: calc(50% + {{ radius }}% * sin({{ angle }}deg));
-                         top: calc(50% - {{ radius }}% * cos({{ angle }}deg));
-                         transform: translate(-50%, -50%);
-                       ">
-                            {{ hour if hour != 0 else 24}}
-                        </div>
-                        {% endfor %}
-                    </div>
                 </div>
             </div>
         </div>
-        <div class="tasks w-162">
-            <div class="w-full">
-                <h2 class="card-title mb-4">Общие задачи</h2>
-                <button class="btn btn-primary w-full" onclick="common_task_modal.showModal()">+ Добавить</button>
-                <div class="w-full space-y-2 overflow-hidden">
-                    {% for task in tasks.common.all %}
-                    <div
-                        class="card card-side bg-base-200 shadow-md w-full my-2 hover:shadow-xs transition-shadow overflow-hidden {% if task.done %}opacity-50{% endif %}">
-                        <div class="card-body flex flex-col sm:flex-row items-center justify-between p-4 gap-4 w-full">
-                            <!-- Чекбокс и основное содержимое -->
-                            <div class="flex items-center space-x-4 w-full sm:w-auto sm:flex-1 min-w-0">
-                                <input
-                                    onchange="window.location.href='/check_common_task?page_date={{ date }}&task_id={{ task.id }}'"
-                                    type="checkbox" class="checkbox checkbox-primary" {% if task.done %}checked="" {%
-                                    endif %} />
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="text-lg font-medium truncate text-wrap">{{ task.name }}</h3>
-                                    <p class="text-sm text-gray-500 truncate text-wrap">{{ task.description }}</p>
-                                </div>
-                            </div>
-                            <!-- Кнопки действий -->
-                            <div class="flex space-x-2 shrink-0">
-                                <a href="/home/{{ date }}?edit_task=common.{{ task.id }}"
-                                    class="btn btn-sm btn-ghost btn-square">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                </a>
-                                <a href="/delete_common_task?page_date={{ date }}&task_id={{ task.id }}"
-                                    class="btn btn-sm btn-ghost btn-square text-error">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
+
+        <script src="/static/js/calendar.js" defer></script>
+        <input type="checkbox" id="my_modal_7" class="modal-toggle"/>
+        <div class="modal md:static md:visible md:pointer-events-auto" role="dialog">
+            <div class="modal-box md:shadow-none md:opacity-100 p-0 w-min">
+                <calendar-date id="calendar"
+                               class="cally bg-base-300 border border-base-300 shadow-md rounded-box w-70">
+                    <svg aria-label="Previous" class="fill-current size-4" slot="previous"
+                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path>
+                    </svg>
+                    <svg aria-label="Next" class="fill-current size-4" slot="next"
+                         xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 24 24">
+                        <path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path>
+                    </svg>
+                    <calendar-month></calendar-month>
+                </calendar-date>
             </div>
+            <label class="modal-backdrop" for="my_modal_7">Close</label>
         </div>
 
     </div>
 
-
-    <div class="tasks w-120">
+    <div class="tasks w-full">
         <div class="w-full">
             <h2 class="card-title mb-4">Задачи по времени</h2>
-            <button class="btn btn-primary w-full" onclick="time_task_modal.showModal()">+ Добавить</button>
-            <div class="w-full space-y-2 overflow-hidden">
+            <div class="w-full flex gap-1">
+                <button class="btn btn-primary flex-1" onclick="time_task_modal.showModal()">+&nbsp;Добавить</button>
+                <button onclick="window.location.href='/move_time_task?page_date={{ date }}'"
+                        class="btn btn-primary w-min px-2">
+                    <svg width="24" height="24" viewBox="0 0 19 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Список задач (три линии) -->
+                        <line x1="0" y1="7" x2="10" y2="7" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round"/>
+                        <line x1="0" y1="12" x2="10" y2="12" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round"/>
+                        <line x1="0" y1="17" x2="10" y2="17" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round"/>
+
+                        <!-- Стрелка вправо -->
+                        <path d="M17 12L20 15L17 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                              stroke-linejoin="round"/>
+                        <line x1="20" y1="15" x2="13" y2="15" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="w-full space-y-2">
                 {% for task in tasks.time.all %}
                 <div
-                    class="card card-side bg-base-200 shadow-md w-full my-2 hover:shadow-xs transition-shadow overflow-hidden {% if task.done %}opacity-50{% endif %}">
+                        class="card card-side card-xs bg-base-200 shadow-md w-full my-2 hover:shadow-xs transition-shadow overflow-hidden {% if task.done %}opacity-50{% endif %}">
                     <!-- Цветная полоса слева -->
-                    <div class="w-2 rounded-l-lg" style="background-color: {{ task.color }};"></div>
+                    <div class="w-1.5 rounded-l-lg" style="background-color: {{ task.color }};"></div>
 
-                    <div class="card-body flex flex-col sm:flex-row items-center justify-between p-4 gap-4 w-full">
+                    <div class="card-body flex flex-row items-center justify-between p-3 gap-4 w-full">
                         <!-- Чекбокс и основное содержимое -->
-                        <div class="flex items-center space-x-4 w-full sm:w-auto sm:flex-1 min-w-0">
+                        <div class="flex items-center space-x-3 w-full sm:w-auto sm:flex-1 min-w-0">
                             <input
-                                onchange="window.location.href='/check_time_task?page_date={{ date }}&task_id={{ task.id }}'"
-                                type="checkbox" class="checkbox checkbox-primary" {% if task.done %}checked="" {% endif
-                                %} />
+                                    onchange="window.location.href='/check_time_task?page_date={{ date }}&task_id={{ task.id }}'"
+                                    type="checkbox" class="checkbox checkbox-primary" {% if task.done %}checked=""
+                                    {%
+                                    endif
+                                    %}/>
                             <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-medium truncate text-wrap">{{ task.name }}</h3>
+                                <h3 class="text-base font-medium truncate text-wrap">{{ task.name }}</h3>
                                 <p class="text-sm text-gray-500 truncate text-wrap">{{ task.description }}</p>
                                 <!-- Временные метки-->
                                 {% if task.start_time != task.end_time %}
-                                <div class="flex flex-wrap items-center gap-2 mt-2">
+                                <div class="flex flex-wrap items-center gap-1 mt-2">
                                     <div class="flex items-center gap-1 bg-base-100/50 px-2 py-1 rounded-lg">
                                         <span class="text-xs font-semibold text-gray-500">С</span>
                                         <div class="flex items-center gap-1">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      stroke-width="2"
+                                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
                                             <span class="font-medium">{{ task.start_time[:-3] }}</span>
                                         </div>
                                     </div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400"
+                                         fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                              d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                                     </svg>
                                     <div class="flex items-center gap-1 bg-base-100/50 px-2 py-1 rounded-lg">
                                         <span class="text-xs font-semibold text-gray-500">До</span>
                                         <div class="flex items-center gap-1">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      stroke-width="2"
+                                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
                                             <span class="font-medium">{{ task.end_time[:-3] }}</span>
                                         </div>
@@ -214,9 +249,10 @@
                                         <span class="text-xs font-semibold text-gray-500">В</span>
                                         <div class="flex items-center gap-1">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      stroke-width="2"
+                                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
                                             <span class="font-medium">{{ task.start_time[:-3] }}</span>
                                         </div>
@@ -226,21 +262,23 @@
                             </div>
                         </div>
                         <!-- Кнопки действий -->
-                        <div class="flex space-x-2 shrink-0">
+                        <div class="flex gap-1 shrink-0 flex-col 2xl:flex-row">
                             <a href="/home/{{ date }}?edit_task=time.{{ task.id }}"
-                                class="btn btn-sm btn-ghost btn-square">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
+                               class="btn btn-sm btn-ghost btn-square">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                     viewBox="0 0 24 24"
+                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                             </a>
                             <a href="/delete_time_task?page_date={{ date }}&task_id={{ task.id }}"
-                                class="btn btn-sm btn-ghost btn-square text-error">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
+                               class="btn btn-sm btn-ghost btn-square text-error">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                     viewBox="0 0 24 24"
+                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                 </svg>
                             </a>
                         </div>
@@ -251,42 +289,67 @@
         </div>
     </div>
 
-    <div class="tasks w-80">
+    <div class="tasks w-full">
         <div class="w-full">
             <h2 class="card-title mb-4">Быстрые задачи</h2>
-            <button class="btn btn-primary w-full" onclick="short_task_modal.showModal()">+ Добавить</button>
+
+            <div class="w-full flex gap-1">
+                <button class="btn btn-primary flex-1" onclick="short_task_modal.showModal()">+&nbsp;Добавить</button>
+                <button onclick="window.location.href='/move_short_task?page_date={{ date }}'"
+                        class="btn btn-primary w-min px-2">
+                    <svg width="24" height="24" viewBox="0 0 19 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Список задач (три линии) -->
+                        <line x1="0" y1="7" x2="10" y2="7" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round"/>
+                        <line x1="0" y1="12" x2="10" y2="12" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round"/>
+                        <line x1="0" y1="17" x2="10" y2="17" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round"/>
+
+                        <!-- Стрелка вправо -->
+                        <path d="M17 12L20 15L17 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                              stroke-linejoin="round"/>
+                        <line x1="20" y1="15" x2="13" y2="15" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
             <div class="w-full space-y-2 overflow-hidden">
                 {% for task in tasks.short.all %}
                 <div
-                    class="card card-side bg-base-200 shadow-md w-full my-2 hover:shadow-xs transition-shadow overflow-hidden {% if task.done %}opacity-50{% endif %}">
-                    <div class="card-body flex flex-col sm:flex-row items-center justify-between p-4 gap-4 w-full">
+                        class="card card-side card-xs bg-base-200 shadow-md w-full my-2 hover:shadow-xs transition-shadow overflow-hidden {% if task.done %}opacity-50{% endif %}">
+                    <div class="card-body flex flex-row items-center justify-between p-3 gap-4 w-full">
                         <!-- Чекбокс и основное содержимое -->
-                        <div class="flex items-center space-x-4 w-full sm:w-auto sm:flex-1 min-w-0">
+                        <div class="flex items-center space-x-3 w-full sm:w-auto sm:flex-1 min-w-0">
                             <input
-                                onchange="window.location.href='/check_short_task?page_date={{ date }}&task_id={{ task.id }}'"
-                                type="checkbox" class="checkbox checkbox-primary" {% if task.done %}checked="" {% endif
-                                %} />
+                                    onchange="window.location.href='/check_short_task?page_date={{ date }}&task_id={{ task.id }}'"
+                                    type="checkbox" class="checkbox checkbox-primary" {% if task.done %}checked=""
+                                    {%
+                                    endif
+                                    %}/>
                             <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-medium truncate text-wrap">{{ task.name }}</h3>
+                                <h3 class="text-base font-medium truncate text-wrap">{{ task.name }}</h3>
                                 <p class="text-sm text-gray-500 truncate text-wrap">{{ task.description }}</p>
                             </div>
                         </div>
                         <!-- Кнопки действий -->
-                        <div class="flex space-x-2 shrink-0">
+                        <div class="flex space-x-1   shrink-0">
                             <a href="/home/{{ date }}?edit_task=short.{{ task.id }}"
-                                class="btn btn-sm btn-ghost btn-square">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
+                               class="btn btn-sm btn-ghost btn-square">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                     viewBox="0 0 24 24"
+                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                             </a>
                             <a href="/delete_short_task?page_date={{ date }}&task_id={{ task.id }}"
-                                class="btn btn-sm btn-ghost btn-square text-error">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
+                               class="btn btn-sm btn-ghost btn-square text-error">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                     viewBox="0 0 24 24"
+                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                 </svg>
                             </a>
                         </div>
@@ -297,38 +360,81 @@
         </div>
     </div>
 
-</div>
-
-</div>
-
-
-<dialog id="time_task_modal" class="modal p-0" data-scroll-lock>
-    <div class="modal-box">
-        <h3 class="text-lg font-bold">Новая задача</h3>
-        <!-- <p class="py-4">Press ESC key or click outside to close</p> -->
-        <form class="space-y-6" action="" method="post">
-
-            {{ forms.time.hidden_tag() }}
-            <p>
-                {{ forms.time.name.label(class="block text-sm/6 font-medium") }}<br>
-                {{ forms.time.name(class="input input-primary w-full") }}<br>
-                {% for error in forms.time.name.errors %}
-            <div class="alert alert-danger" role="alert">
-                {{ error }}
+    <div class="tasks w-full">
+        <div class="w-full">
+            <h2 class="card-title mb-4">Общие задачи</h2>
+            <button class="btn btn-primary w-full" onclick="common_task_modal.showModal()">+&nbsp;Добавить</button>
+            <div class="w-full space-y-2">
+                {% for task in tasks.common.all %}
+                <div
+                        class="card card-side card-xs bg-base-200 shadow-md w-full my-2 hover:shadow-xs transition-shadow overflow-hidden {% if task.done %}opacity-50{% endif %}">
+                    <div class="card-body flex flex-row items-center justify-between p-3 gap-4 w-full">
+                        <!-- Чекбокс и основное содержимое -->
+                        <div class="flex items-center space-x-3 w-full sm:w-auto sm:flex-1 min-w-0">
+                            <input
+                                    onchange="window.location.href='/check_common_task?page_date={{ date }}&task_id={{ task.id }}'"
+                                    type="checkbox" class="checkbox checkbox-primary" {% if task.done %}checked=""
+                                    {%
+                                    endif %}/>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-base font-medium truncate text-wrap">{{ task.name }}</h3>
+                                <p class="text-sm text-gray-500 truncate text-wrap">{{ task.description }}</p>
+                            </div>
+                        </div>
+                        <!-- Кнопки действий -->
+                        <div class="flex space-x-1 shrink-0">
+                            <a href="/home/{{ date }}?edit_task=common.{{ task.id }}"
+                               class="btn btn-sm btn-ghost btn-square">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </a>
+                            <a href="/delete_common_task?page_date={{ date }}&task_id={{ task.id }}"
+                               class="btn btn-sm btn-ghost btn-square text-error">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-            </p>
-            <p>
-                {{ forms.time.description.label(class="block text-sm/6 font-medium") }}<br>
-                {{ forms.time.description(class="input input-primary w-full h-20") }}<br>
-                {% for error in forms.time.description.errors %}
-            <div class="alert alert-danger" role="alert">
-                {{ error }}
-            </div>
-            {% endfor %}
-            </p>
+        </div>
+    </div>
 
-            <p class="flex justify-between space-x-5">
+
+    <dialog id="time_task_modal" class="modal p-0" data-scroll-lock>
+        <div class="modal-box">
+            <h3 class="text-lg font-bold">Новая задача</h3>
+            <!-- <p class="py-4">Press ESC key or click outside to close</p> -->
+            <form class="space-y-6" action="" method="post">
+
+                {{ forms.time.hidden_tag() }}
+                <p>
+                    {{ forms.time.name.label(class="block text-sm/6 font-medium") }}<br>
+                    {{ forms.time.name(class="input input-primary w-full") }}<br>
+                    {% for error in forms.time.name.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                </p>
+                <p>
+                    {{ forms.time.description.label(class="block text-sm/6 font-medium") }}<br>
+                    {{ forms.time.description(class="input input-primary w-full h-20") }}<br>
+                    {% for error in forms.time.description.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                </p>
+
+                <p class="flex justify-between space-x-5">
                 <span class="w-full">
                     {{ forms.time.start_time.label(class="block text-sm/6 font-medium") }}<br>
                     {{ forms.time.start_time(type="time", class="input input-primary w-full") }}<br>
@@ -338,7 +444,7 @@
                     </div>
                     {% endfor %}
                 </span>
-                <span class="w-full">
+                    <span class="w-full">
                     {{ forms.time.end_time.label(class="block text-sm/6 font-medium") }}<br>
                     {{ forms.time.end_time(type="time", class="input input-primary w-full") }}<br>
                     {% for error in forms.time.end_time.errors %}
@@ -347,111 +453,112 @@
                     </div>
                     {% endfor %}
                 </span>
-            </p>
-            <p>{{ forms.time.submit(type="submit", class="btn btn-primary flex w-full") }}</p>
+                </p>
+                <p>{{ forms.time.submit(type="submit", class="btn btn-primary flex w-full") }}</p>
+            </form>
+        </div>
+        <form method="dialog" class="modal-backdrop" onsubmit="console.log(123);">
+            <button>close</button>
         </form>
-    </div>
-    <form method="dialog" class="modal-backdrop" onsubmit="console.log(123);">
-        <button>close</button>
-    </form>
-</dialog>
-<dialog id="short_task_modal" class="modal p-0" data-scroll-lock>
-    <div class="modal-box">
-        <h3 class="text-lg font-bold">Новая короткая задача</h3>
-        <!-- <p class="py-4">Press ESC key or click outside to close</p> -->
-        <form class="space-y-6" action="" method="post">
+    </dialog>
+    <dialog id="short_task_modal" class="modal p-0" data-scroll-lock>
+        <div class="modal-box">
+            <h3 class="text-lg font-bold">Новая короткая задача</h3>
+            <!-- <p class="py-4">Press ESC key or click outside to close</p> -->
+            <form class="space-y-6" action="" method="post">
 
-            {{ forms.short.hidden_tag() }}
-            <p>
-                {{ forms.short.name.label(class="block text-sm/6 font-medium") }}<br>
-                {{ forms.short.name(class="input input-primary w-full") }}<br>
-                {% for error in forms.short.name.errors %}
-            <div class="alert alert-danger" role="alert">
-                {{ error }}
-            </div>
-            {% endfor %}
-            </p>
-            <p>
-                {{ forms.short.description.label(class="block text-sm/6 font-medium") }}<br>
-                {{ forms.short.description(class="input input-primary w-full h-20") }}<br>
-                {% for error in forms.short.description.errors %}
-            <div class="alert alert-danger" role="alert">
-                {{ error }}
-            </div>
-            {% endfor %}
-            </p>
-            <p>{{ forms.short.submit(type="submit", class="btn btn-primary flex w-full") }}</p>
+                {{ forms.short.hidden_tag() }}
+                <p>
+                    {{ forms.short.name.label(class="block text-sm/6 font-medium") }}<br>
+                    {{ forms.short.name(class="input input-primary w-full") }}<br>
+                    {% for error in forms.short.name.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                </p>
+                <p>
+                    {{ forms.short.description.label(class="block text-sm/6 font-medium") }}<br>
+                    {{ forms.short.description(class="input input-primary w-full h-20") }}<br>
+                    {% for error in forms.short.description.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                </p>
+                <p>{{ forms.short.submit(type="submit", class="btn btn-primary flex w-full") }}</p>
+            </form>
+        </div>
+        <form method="dialog" class="modal-backdrop" onsubmit="console.log(123);">
+            <button>close</button>
         </form>
-    </div>
-    <form method="dialog" class="modal-backdrop" onsubmit="console.log(123);">
-        <button>close</button>
-    </form>
-</dialog>
-<dialog id="common_task_modal" class="modal p-0" data-scroll-lock>
-    <div class="modal-box">
-        <h3 class="text-lg font-bold">Новая общая задача</h3>
-        <!-- <p class="py-4">Press ESC key or click outside to close</p> -->
-        <form class="space-y-6" action="" method="post">
+    </dialog>
+    <dialog id="common_task_modal" class="modal p-0" data-scroll-lock>
+        <div class="modal-box">
+            <h3 class="text-lg font-bold">Новая общая задача</h3>
+            <!-- <p class="py-4">Press ESC key or click outside to close</p> -->
+            <form class="space-y-6" action="" method="post">
 
-            {{ forms.common.hidden_tag() }}
-            <p>
-                {{ forms.common.name.label(class="block text-sm/6 font-medium") }}<br>
-                {{ forms.common.name(class="input input-primary w-full") }}<br>
-                {% for error in forms.common.name.errors %}
-            <div class="alert alert-danger" role="alert">
-                {{ error }}
-            </div>
-            {% endfor %}
-            </p>
-            <p>
-                {{ forms.common.description.label(class="block text-sm/6 font-medium") }}<br>
-                {{ forms.common.description(class="input input-primary w-full h-20") }}<br>
-                {% for error in forms.common.description.errors %}
-            <div class="alert alert-danger" role="alert">
-                {{ error }}
-            </div>
-            {% endfor %}
-            </p>
-            <p>{{ forms.common.submit(type="submit", class="btn btn-primary flex w-full") }}</p>
+                {{ forms.common.hidden_tag() }}
+                <p>
+                    {{ forms.common.name.label(class="block text-sm/6 font-medium") }}<br>
+                    {{ forms.common.name(class="input input-primary w-full") }}<br>
+                    {% for error in forms.common.name.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                </p>
+                <p>
+                    {{ forms.common.description.label(class="block text-sm/6 font-medium") }}<br>
+                    {{ forms.common.description(class="input input-primary w-full h-20") }}<br>
+                    {% for error in forms.common.description.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                </p>
+                <p>{{ forms.common.submit(type="submit", class="btn btn-primary flex w-full") }}</p>
+            </form>
+        </div>
+        <form method="dialog" class="modal-backdrop" onsubmit="console.log(123);">
+            <button>close</button>
         </form>
-    </div>
-    <form method="dialog" class="modal-backdrop" onsubmit="console.log(123);">
-        <button>close</button>
-    </form>
-</dialog>
+    </dialog>
 
-<script>
-    // Находим все модальные окна
-    const modals = document.querySelectorAll('dialog.modal');
+    <script>
+        // Находим все модальные окна
+        const modals = document.querySelectorAll('dialog.modal');
 
-    // Для каждого модального окна добавляем обработчик закрытия
-    modals.forEach((modal) => {
-        modal.addEventListener('close', () => {
-            // Находим ВСЕ формы внутри этого диалога (если их несколько)
-            const forms = modal.querySelectorAll('form:not([method="dialog"])');
-            forms.forEach((form) => {
-                // Сбрасываем форму
-                form.reset();
+        // Для каждого модального окна добавляем обработчик закрытия
+        modals.forEach((modal) => {
+            modal.addEventListener('close', () => {
+                // Находим ВСЕ формы внутри этого диалога (если их несколько)
+                const forms = modal.querySelectorAll('form:not([method="dialog"])');
+                forms.forEach((form) => {
+                    // Сбрасываем форму
+                    form.reset();
 
-                // Дополнительная проверка для конкретного модального окна
-                // Если в форме есть поле edit_id с непустым значением
-                const editIdInput = form.querySelector('[name="edit_id"]');
-                if (editIdInput && editIdInput.value) {
-                    // Перезагружаем страницу без query параметров
-                    window.location.href = window.location.pathname;
-                }
+                    // Дополнительная проверка для конкретного модального окна
+                    // Если в форме есть поле edit_id с непустым значением
+                    const editIdInput = form.querySelector('[name="edit_id"]');
+                    if (editIdInput && editIdInput.value) {
+                        // Перезагружаем страницу без query параметров
+                        window.location.href = window.location.pathname;
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
 
-{% if form_errors.time or forms.time.edit_id.data %}
-<script>document.getElementById("time_task_modal").showModal()</script>
-{% endif %}
-{% if form_errors.short or forms.short.edit_id.data %}
-<script>document.getElementById("short_task_modal").showModal()</script>
-{% endif %}
-{% if form_errors.common or forms.common.edit_id.data %}
-<script>document.getElementById("common_task_modal").showModal()</script>
-{% endif %}
-{% endblock %}
+    {% if form_errors.time or forms.time.edit_id.data %}
+    <script>document.getElementById("time_task_modal").showModal()</script>
+    {% endif %}
+    {% if form_errors.short or forms.short.edit_id.data %}
+    <script>document.getElementById("short_task_modal").showModal()</script>
+    {% endif %}
+    {% if form_errors.common or forms.common.edit_id.data %}
+    <script>document.getElementById("common_task_modal").showModal()</script>
+    {% endif %}
+
+    {% endblock %}
