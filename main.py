@@ -31,8 +31,10 @@ init_db(app, "../data/database.db")
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# Устанавливаем русскую локаль (для Windows может быть 'rus' или 'ru_RU.UTF-8')
-locale.setlocale(locale.LC_TIME, 'rus')
+if os.name == 'nt':  # Windows
+    locale.setlocale(locale.LC_TIME, 'rus')
+else:  # Linux/MacOS/Unix
+    locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
 
 @login_manager.user_loader
