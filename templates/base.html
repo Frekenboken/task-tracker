@@ -29,17 +29,17 @@
     <!--    </p>-->
     <!--{% endif %}-->
     <!--    </nav> -->
-    <div class="navbar bg-base-300 z-10 fixed shadow-md py-0 pr-0">
+    <div class="navbar bg-base-300 z-10 fixed shadow-md py-0">
         <div class="flex-1">
             <a href="/" class="font-semibold p-4 text-xl text-primary">Delay</a>
         </div>
-        <div class="flex items-center">
+        <div class="flex items-center gap-2">
             <!--        <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto"/>-->
             {% if current_user.is_authenticated %}
             {{ current_user.name }}
             <div class="dropdown dropdown-end dropdown-hover">
                 <div tabindex="0" role="button"
-                     class="btn btn-ghost btn-circle avatar w-16 h-16">
+                     class="btn btn-ghost btn-circle avatar w-10 h-16">
                     <div class="w-8 h-8 rounded-full ring ring-primary ring-offset-base-300 ring-offset-2">
                         {% if not current_user.avatar %}
                         <div class="flex items-center justify-center w-full h-full bg-base-100">
