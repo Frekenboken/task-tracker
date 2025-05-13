@@ -99,6 +99,9 @@
 2. pytz - работа с временными зонами
 3. requests - работа с API
 
+## Презентация
+https://disk.yandex.ru/i/5gfbdzyzD70qrQ
+
 
 
 
