@@ -212,6 +212,9 @@ def home(date):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect("/home")
+
     form = LoginForm()
     if form.validate_on_submit():
         user = db.session.query(User).filter(User.email == form.email.data).first()
@@ -231,6 +234,9 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
+    if current_user.is_authenticated:
+        return redirect("/home")
+
     form = RegisterForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
