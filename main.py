@@ -292,7 +292,7 @@ def tasks_move():
             task.date = task.date + timedelta(days=1)
         db.session.commit()  # Сохраняем изменения для всех задач
     else:
-        abort(404)
+        return redirect(f'/home/{page_date}')
     return redirect(
         f'/home/{(datetime.strptime(page_date, "%Y-%m-%d").date() + timedelta(days=1)).strftime('%Y-%m-%d')}')
 
